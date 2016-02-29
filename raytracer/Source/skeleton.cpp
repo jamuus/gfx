@@ -14,18 +14,18 @@ using glm::mat3;
 /* ----------------------------------------------------------------------------*/
 /* GLOBAL VARIABLES                                                            */
 
-const int SCREEN_WIDTH = 600;
-const int SCREEN_HEIGHT = 600;
-const int NUM_RAYS = 100;
+const int SCREEN_WIDTH = 300;
+const int SCREEN_HEIGHT = 300;
+const int NUM_RAYS = 10000;
 const int NUM_SAMPLES = 1;
-#define MAXDEPTH 2
+#define MAXDEPTH 1
 
 vec3 image[SCREEN_WIDTH * SCREEN_HEIGHT * NUM_SAMPLES];
 
 SDL_Surface* screen;
 int t;
 
-vec3 cameraPos(0.0f, 0.0f, -2.1f);
+vec3 cameraPos(0.0f, 0.0f, -2.0f);
 /* ----------------------------------------------------------------------------*/
 /* FUNCTIONS                                                                   */
 
