@@ -16,9 +16,9 @@ using glm::mat3;
 
 const int SCREEN_WIDTH = 600;
 const int SCREEN_HEIGHT = 600;
-const int NUM_RAYS = 1000;
+const int NUM_RAYS = 100;
 const int NUM_SAMPLES = 1;
-#define MAXDEPTH 1
+#define MAXDEPTH 2
 
 vec3 image[SCREEN_WIDTH * SCREEN_HEIGHT * NUM_SAMPLES];
 
