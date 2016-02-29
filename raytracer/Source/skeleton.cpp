@@ -54,7 +54,7 @@ vector<Triangle> model;
 
 int main( int argc, char* argv[] )
 {
-    InitBucket();
+    // InitBucket();
     LoadTestModel(model);
     screen = InitializeSDL( SCREEN_WIDTH, SCREEN_HEIGHT );
     t = SDL_GetTicks(); // Set start value for timer.
@@ -99,12 +99,6 @@ void SetBucket(vec3 a, vec3 power, int depth)
     // grid[position] = power;
     grid[position] = grid[position] - (grid[position] / filterSize) + power / filterSize;
 }
-
-// void IncBucket(vec3 a, vec3 power)
-// {
-//     vec3 oldval = GetBucket(a);
-//     SetBucket(a, oldval + power);
-// }
 
 vec3 GetBucket(vec3 a, int depth)
 {
@@ -197,52 +191,12 @@ vec3 bottomLeft(1, 1, 0); // yellow?
 
 float f = SCREEN_HEIGHT / 2;
 
-void shootRay(vec3 pos, vec3 dir, float totDist, int depth, vec3 raycolor)
-{
-    Intersection i;
-    if (depth < NUM_BOUNCES) {
-        if (ClosestIntersection(pos,
-                                dir,
-                                model,
-                                i)) {
-            float r = dist(pos, i.position) + totDist;
-
-            float A = 4.0f * PI * r * r;
-            vec3 B = raycolor / A;
-            vec3 nhat = model[i.triangleIndex].normal;
-            nhat = nhat / dist(vec3(0, 0, 0), nhat);
-
-            vec3 rhat = pos - i.position;
-            rhat = rhat / dist(vec3(0, 0, 0), rhat);
-
-            vec3 D = B * max(dot(rhat, nhat), 0.0f);
-
-            raycolor = model[i.triangleIndex].color * raycolor;
-            raycolor = raycolor / dist(vec3(0, 0, 0), raycolor) * reflectedPower;
-
-            SetBucket(i.position, D * raycolor, depth);
-
-            vec3 reflecteddir = dir - 2.0f * nhat * dot(dir, nhat);
-            shootRay(i.position, reflecteddir, r, depth + 1, raycolor);
-        } else {
-            // do noting
-        }
-    }
-}
-
 void Draw()
 {
     SDL_FillRect( screen, 0, 0 );
 
     if ( SDL_MUSTLOCK(screen) )
         SDL_LockSurface(screen);
-
-    vector<vec3> rays = GenerateRays();
-    for (int i = 0; i < NUM_RAYS; i++) {
-
-
-        shootRay(lightPos, rays[i], 0.0f, 0, lightColor);
-    }
 
 //**--------------------------------------------------**//
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
@@ -260,33 +214,24 @@ void Draw()
 
                 Triangle t = model[cameraWorldInt.triangleIndex];
 
-                vec3 color = vec3(0, 0, 0);
-                for (int i = 0; i < NUM_BOUNCES; i++) {
-                    color += GetBucket(cameraWorldInt.position, i);
+                vec3 lightDir = lightPos - cameraWorldInt.position;
+                lightDir /= dist(vec3(0, 0, 0), lightDir);
+
+                Intersection shadowIntersection;
+                if (ClosestIntersection(cameraWorldInt.position,
+                                        lightDir,
+                                        model,
+                                        shadowIntersection)
+                        &&
+                        shadowIntersection.distance
+                        <
+                        dist(cameraWorldInt.position, lightPos)
+                   ) {
+                    colour = vec3(0.0f, 0.0f, 0.0f) + indirectLight * t.color;
+                } else {
+                    vec3 D = DirectLight(cameraWorldInt);
+                    colour = (D + indirectLight) * t.color;
                 }
-                colour = color;
-
-                // colour = t.color * DirectLight(cameraWorldInt);
-                // cout << colour.x << "\n" << colour.y << "\n" << colour.z << endl;
-                // vec3 lightDir = lightPos - cameraWorldInt.position;
-                // lightDir /= dist(vec3(0, 0, 0), lightDir);
-
-                // Intersection shadowIntersection;
-                // if (ClosestIntersection(cameraWorldInt.position,
-                //                         lightDir,
-                //                         model,
-                //                         shadowIntersection)
-                //         &&
-                //         // dist(shadowIntersection.position, cameraWorldInt.position)
-                //         shadowIntersection.distance
-                //         <
-                //         dist(cameraWorldInt.position, lightPos)
-                //    ) {
-                //     colour = vec3(0.0f, 0.0f, 0.0f) + indirectLight * t.color;
-                // } else {
-                // vec3 D = DirectLight(cameraWorldInt);
-                // colour = (D + indirectLight) * t.color;
-                // }
             } else {
                 colour = vec3(0.0, 0.0, 0.0);
             }
@@ -392,10 +337,6 @@ void Interpolate(vec3 a, vec3 b, vector<vec3>& result)
     );
 
     for (int i = 0; i < result.size(); i++) {
-        // result[i].x = a.x + diff.x * i;
-        // result[i].y = a.y + diff.y * i;
-        // result[i].z = a.z + diff.z * i;
-
         result[i] = a + diff * (float)i;
     }
 }
