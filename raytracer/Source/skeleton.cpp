@@ -16,9 +16,9 @@ using glm::mat3;
 const int SCREEN_WIDTH = 600;
 const int SCREEN_HEIGHT = 600;
 const int NUM_RAYS = 10000;
-const int NUM_BUCKETS = 200;
 const int NUM_BOUNCES = 100;
-vec3 *grid;
+const int NUM_SAMPLES = 1;
+vec3 image[SCREEN_WIDTH * SCREEN_HEIGHT * NUM_SAMPLES];
 
 SDL_Surface* screen;
 int t;
@@ -33,9 +33,9 @@ struct Intersection {
     int triangleIndex;
 };
 
-void SetBucket(vec3 a, vec3 power, int depth);
-vec3 GetBucket(vec3 a, int depth);
-void InitBucket();
+// void SetBucket(vec3 a, vec3 power, int depth);
+// vec3 GetBucket(vec3 a, int depth);
+
 vector<vec3> GenerateRays();
 void Update();
 void Draw();
@@ -52,9 +52,18 @@ float dist(vec3 a, vec3 b);
 
 vector<Triangle> model;
 
+void InitImage()
+{
+    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
+        for (int j = 0; j < NUM_SAMPLES; j++) {
+            image[i * NUM_SAMPLES + j] = vec3(0, 0, 0);
+        }
+    }
+}
+
 int main( int argc, char* argv[] )
 {
-    InitBucket();
+    InitImage();
     LoadTestModel(model);
     screen = InitializeSDL( SCREEN_WIDTH, SCREEN_HEIGHT );
     t = SDL_GetTicks(); // Set start value for timer.
@@ -80,40 +89,40 @@ vec3 indirectLight = 0.5f * vec3( 1, 1, 1 );
 vec3 lightColor = 5.f * vec3(1, 1, 1);
 float reflectedPower = 3.0f;
 
-void InitBucket()
-{
-    grid = (vec3*) calloc(sizeof(vec3), (NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * NUM_BOUNCES));
-    for (int i = 0; i < NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * NUM_BOUNCES; i++) {
-        grid[i] = vec3(0.0f, 0.0f, 0.0f);
-    }
-}
-
-float maxdim = 1.01;
-float filterSize = 5.0f;
-
-void SetBucket(vec3 a, vec3 power, int depth)
-{
-    vec3 temp = (a + maxdim) / (2 * maxdim) * (float)NUM_BUCKETS;
-    temp.x = (int)temp.x, temp.y = (int)temp.y, temp.z = (int)temp.z;
-    int position = (int) ((NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * depth) + (NUM_BUCKETS * NUM_BUCKETS * temp.z) + (NUM_BUCKETS * temp.y) + temp.x);
-    // grid[position] = power;
-    grid[position] = grid[position] - (grid[position] / filterSize) + power / filterSize;
-}
-
-// void IncBucket(vec3 a, vec3 power)
+// void InitBucket()
 // {
-//     vec3 oldval = GetBucket(a);
-//     SetBucket(a, oldval + power);
+//     grid = (vec3*) calloc(sizeof(vec3), (NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * NUM_BOUNCES));
+//     for (int i = 0; i < NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * NUM_BOUNCES; i++) {
+//         grid[i] = vec3(0.0f, 0.0f, 0.0f);
+//     }
 // }
 
-vec3 GetBucket(vec3 a, int depth)
-{
-    vec3 temp = (a + maxdim) / (2 * maxdim) * (float)NUM_BUCKETS;
-    temp.x = (int)temp.x, temp.y = (int)temp.y, temp.z = (int)temp.z;
-    int position = (int) ((NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * depth) + (NUM_BUCKETS * NUM_BUCKETS * temp.z) + (NUM_BUCKETS * temp.y) + temp.x);
-    vec3 spixy = grid[position];
-    return spixy;
-}
+// float maxdim = 1.01;
+// float filterSize = 5.0f;
+
+// void SetBucket(vec3 a, vec3 power, int depth)
+// {
+//     vec3 temp = (a + maxdim) / (2 * maxdim) * (float)NUM_BUCKETS;
+//     temp.x = (int)temp.x, temp.y = (int)temp.y, temp.z = (int)temp.z;
+//     int position = (int) ((NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * depth) + (NUM_BUCKETS * NUM_BUCKETS * temp.z) + (NUM_BUCKETS * temp.y) + temp.x);
+//     // grid[position] = power;
+//     grid[position] = grid[position] - (grid[position] / filterSize) + power / filterSize;
+// }
+
+// // void IncBucket(vec3 a, vec3 power)
+// // {
+// //     vec3 oldval = GetBucket(a);
+// //     SetBucket(a, oldval + power);
+// // }
+
+// vec3 GetBucket(vec3 a, int depth)
+// {
+//     vec3 temp = (a + maxdim) / (2 * maxdim) * (float)NUM_BUCKETS;
+//     temp.x = (int)temp.x, temp.y = (int)temp.y, temp.z = (int)temp.z;
+//     int position = (int) ((NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * depth) + (NUM_BUCKETS * NUM_BUCKETS * temp.z) + (NUM_BUCKETS * temp.y) + temp.x);
+//     vec3 spixy = grid[position];
+//     return spixy;
+// }
 
 vector<vec3> GenerateRays()
 {
@@ -197,14 +206,16 @@ vec3 bottomLeft(1, 1, 0); // yellow?
 
 float f = SCREEN_HEIGHT / 2;
 
-void shootRay(vec3 pos, vec3 dir, float totDist, int depth, vec3 raycolor)
+vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth, vec3 raycolor)
 {
     Intersection i;
-    if (depth < NUM_BOUNCES) {
+    if (depth > 0) {
+        // calc where the ray intersects the world
         if (ClosestIntersection(pos,
                                 dir,
                                 model,
                                 i)) {
+            // total distance to this point from camera
             float r = dist(pos, i.position) + totDist;
 
             float A = 4.0f * PI * r * r;
@@ -217,13 +228,12 @@ void shootRay(vec3 pos, vec3 dir, float totDist, int depth, vec3 raycolor)
 
             vec3 D = B * max(dot(rhat, nhat), 0.0f);
 
-            raycolor = model[i.triangleIndex].color * raycolor;
-            raycolor = raycolor / dist(vec3(0, 0, 0), raycolor) * reflectedPower;
-
-            SetBucket(i.position, D * raycolor, depth);
+            // raycolor = model[i.triangleIndex].color * raycolor;
+            // raycolor = raycolor / dist(vec3(0, 0, 0), raycolor) * reflectedPower;
 
             vec3 reflecteddir = dir - 2.0f * nhat * dot(dir, nhat);
-            shootRay(i.position, reflecteddir, r, depth + 1, raycolor);
+            vec3 result = shootRay(i.position, reflecteddir, r, depth - 1, raycolor);
+            return result;
         } else {
             // do noting
         }
@@ -237,59 +247,14 @@ void Draw()
     if ( SDL_MUSTLOCK(screen) )
         SDL_LockSurface(screen);
 
-    vector<vec3> rays = GenerateRays();
-    for (int i = 0; i < NUM_RAYS; i++) {
-
-
-        shootRay(lightPos, rays[i], 0.0f, 0, lightColor);
-    }
-
-//**--------------------------------------------------**//
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
             vec3 rayDir(x - SCREEN_WIDTH / 2, y - SCREEN_HEIGHT / 2, f);
             vec3 rotatedRay = rayDir * R;
 
             vec3 colour;
+            // shootRay(cameraPos, rays[i], 0.0f, 0, lightColor);
 
-            Intersection cameraWorldInt;
-            if (ClosestIntersection(cameraPos,
-                                    rotatedRay,
-                                    model,
-                                    cameraWorldInt)) {
-
-                Triangle t = model[cameraWorldInt.triangleIndex];
-
-                vec3 color = vec3(0, 0, 0);
-                for (int i = 0; i < NUM_BOUNCES; i++) {
-                    color += GetBucket(cameraWorldInt.position, i);
-                }
-                colour = color;
-
-                // colour = t.color * DirectLight(cameraWorldInt);
-                // cout << colour.x << "\n" << colour.y << "\n" << colour.z << endl;
-                // vec3 lightDir = lightPos - cameraWorldInt.position;
-                // lightDir /= dist(vec3(0, 0, 0), lightDir);
-
-                // Intersection shadowIntersection;
-                // if (ClosestIntersection(cameraWorldInt.position,
-                //                         lightDir,
-                //                         model,
-                //                         shadowIntersection)
-                //         &&
-                //         // dist(shadowIntersection.position, cameraWorldInt.position)
-                //         shadowIntersection.distance
-                //         <
-                //         dist(cameraWorldInt.position, lightPos)
-                //    ) {
-                //     colour = vec3(0.0f, 0.0f, 0.0f) + indirectLight * t.color;
-                // } else {
-                // vec3 D = DirectLight(cameraWorldInt);
-                // colour = (D + indirectLight) * t.color;
-                // }
-            } else {
-                colour = vec3(0.0, 0.0, 0.0);
-            }
             PutPixelSDL(screen, x, y, colour);
         }
     }
