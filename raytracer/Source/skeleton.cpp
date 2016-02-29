@@ -15,9 +15,9 @@ using glm::mat3;
 
 const int SCREEN_WIDTH = 600;
 const int SCREEN_HEIGHT = 600;
-const int NUM_RAYS = 10000;
+const int NUM_RAYS = 1000000;
 const int NUM_BUCKETS = 200;
-const int NUM_BOUNCES = 100;
+const int NUM_BOUNCES = 20;
 vec3 *grid;
 
 SDL_Surface* screen;
@@ -265,28 +265,6 @@ void Draw()
                     color += GetBucket(cameraWorldInt.position, i);
                 }
                 colour = color;
-
-                // colour = t.color * DirectLight(cameraWorldInt);
-                // cout << colour.x << "\n" << colour.y << "\n" << colour.z << endl;
-                // vec3 lightDir = lightPos - cameraWorldInt.position;
-                // lightDir /= dist(vec3(0, 0, 0), lightDir);
-
-                // Intersection shadowIntersection;
-                // if (ClosestIntersection(cameraWorldInt.position,
-                //                         lightDir,
-                //                         model,
-                //                         shadowIntersection)
-                //         &&
-                //         // dist(shadowIntersection.position, cameraWorldInt.position)
-                //         shadowIntersection.distance
-                //         <
-                //         dist(cameraWorldInt.position, lightPos)
-                //    ) {
-                //     colour = vec3(0.0f, 0.0f, 0.0f) + indirectLight * t.color;
-                // } else {
-                // vec3 D = DirectLight(cameraWorldInt);
-                // colour = (D + indirectLight) * t.color;
-                // }
             } else {
                 colour = vec3(0.0, 0.0, 0.0);
             }
