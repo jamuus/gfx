@@ -16,7 +16,7 @@ using glm::mat3;
 
 const int SCREEN_WIDTH = 300;
 const int SCREEN_HEIGHT = 300;
-const int NUM_RAYS = 10000;
+const int NUM_RAYS = 100000;
 const int NUM_SAMPLES = 1;
 #define MAXDEPTH 1
 
@@ -294,7 +294,7 @@ vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
 
 void Draw()
 {
-    int numthreads = 4;
+    int numthreads = 8;
     omp_set_num_threads(numthreads);
     printf("numthreads: %d\n", numthreads);
 
@@ -303,6 +303,8 @@ void Draw()
 
     if ( SDL_MUSTLOCK(screen) )
         SDL_LockSurface(screen);
+
+    vector<vec3> rays = GenerateRays();
 
     #pragma omp parallel for
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
@@ -320,7 +322,6 @@ void Draw()
                 if (t.lightSource) {
                     colour = t.intensity;
                 } else {
-                    vector<vec3> rays = GenerateRays();
                     for (int j = 0; j < rays.size(); j++) {
                         colour += shootRay(i.position, rays[j], 0.0f, MAXDEPTH);
                     }
