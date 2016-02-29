@@ -15,11 +15,21 @@ public:
     glm::vec3 v2;
     glm::vec3 normal;
     glm::vec3 color;
+    glm::vec3 intensity;
+    bool lightSource;
 
     Triangle( glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 color )
         : v0(v0), v1(v1), v2(v2), color(color)
     {
         ComputeNormal();
+        lightSource = false;
+    }
+    Triangle( glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 color , glm::vec3 intensity)
+        : v0(v0), v1(v1), v2(v2), color(color)
+    {
+        ComputeNormal();
+        lightSource = true;
+        this->intensity = intensity;
     }
 
     void ComputeNormal()
@@ -81,9 +91,9 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     triangles.push_back( Triangle( E, F, G, cyan ) );
     triangles.push_back( Triangle( F, H, G, cyan ) );
 
-    // Light
-    triangles.push_back( Triangle( E, F, G, green ) );
-    triangles.push_back( Triangle( F, H, G, green ) );
+    vec3 offset(L / 2 - 50, 480, L / 2 - 50);
+    triangles.push_back( Triangle( E / 10.0f + offset, F / 10.0f + offset, G / 10.0f + offset, white, 14.0f * vec3(1, 1, 1)) );
+    triangles.push_back( Triangle( F / 10.0f + offset, H / 10.0f + offset, G / 10.0f + offset, white, 14.0f * vec3(1, 1, 1)) );
 
     // Back wall
     triangles.push_back( Triangle( G, D, C, white ) );
