@@ -1,0 +1,1172 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"ang",
+				"angleLog"
+			],
+			[
+				"upda",
+				"updateSpheroData"
+			],
+			[
+				"spher",
+				"spheroState〔variable〕"
+			],
+			[
+				"SC",
+				"SCREEN_HEIGHT"
+			],
+			[
+				"tria",
+				"triangleIndex"
+			],
+			[
+				"clos",
+				"closest"
+			],
+			[
+				"clo",
+				"closestIntersection"
+			],
+			[
+				"SCRE",
+				"SCREEN_WIDTH"
+			],
+			[
+				"clEnqre",
+				"clEnqueueReadBuffer	Enqueue Commands To Read From Buffer To Host Memory"
+			],
+			[
+				"poin",
+				"POINTS_Y"
+			],
+			[
+				"POINT",
+				"POINTS_X"
+			],
+			[
+				"udp",
+				"udpIncoming〔variable〕"
+			],
+			[
+				"move",
+				"moveHorizontal"
+			],
+			[
+				"work",
+				"workerObstSize"
+			],
+			[
+				"MPI",
+				"MPI_BYTE"
+			],
+			[
+				"workeo",
+				"workedObstSize"
+			],
+			[
+				"coor",
+				"coordToPos"
+			],
+			[
+				"obs",
+				"obstacle_t"
+			],
+			[
+				"worker",
+				"workerId"
+			],
+			[
+				"coord",
+				"coordToMemL"
+			],
+			[
+				"worke",
+				"workerId"
+			],
+			[
+				"speedt",
+				"speedT"
+			],
+			[
+				"MPIS",
+				"MPI_STATUS_IGNORE"
+			],
+			[
+				"MPO",
+				"MPI_COMM_WORLD"
+			],
+			[
+				"accel_a",
+				"accel_area"
+			],
+			[
+				"init",
+				"initialWorkerSize"
+			],
+			[
+				"loca",
+				"localParams"
+			],
+			[
+				"MPI_D",
+				"MPI_DOUBLE"
+			],
+			[
+				"accel",
+				"accel_area_t"
+			],
+			[
+				"accel_ar",
+				"accel_area_t"
+			],
+			[
+				"MPIt",
+				"MPI_Type_accel_e"
+			],
+			[
+				"MPI_T",
+				"MPI_Type_accel_e"
+			],
+			[
+				"initi",
+				"initialiseOtherProcesses"
+			],
+			[
+				"para",
+				"param_t"
+			],
+			[
+				"local",
+				"localParams"
+			],
+			[
+				"des",
+				"destinationRank"
+			],
+			[
+				"coo",
+				"coordToPos"
+			],
+			[
+				"all",
+				"all_cells"
+			],
+			[
+				"coordT",
+				"coordToPos"
+			],
+			[
+				"sens",
+				"sensor"
+			],
+			[
+				"sen",
+				"sensorDy"
+			],
+			[
+				"Ma",
+				"Matrix"
+			],
+			[
+				"fram",
+				"frame_gray"
+			],
+			[
+				"sph",
+				"sphName"
+			],
+			[
+				"send",
+				"sendToServer"
+			],
+			[
+				"av_Ve",
+				"av_vels_result"
+			],
+			[
+				"prev",
+				"previous_timestep"
+			],
+			[
+				"tota",
+				"totalNumGroups"
+			],
+			[
+				"event",
+				"events_to_wait_for"
+			],
+			[
+				"waitf",
+				"waitForSections"
+			],
+			[
+				"sectio",
+				"sectionDepends"
+			],
+			[
+				"sect",
+				"sectionDepends"
+			],
+			[
+				"totao",
+				"totalNumSections"
+			],
+			[
+				"bottom",
+				"bottomB"
+			],
+			[
+				"bot",
+				"bottomA"
+			],
+			[
+				"left",
+				"leftA"
+			],
+			[
+				"wai",
+				"waitForSections"
+			],
+			[
+				"wa",
+				"waitForSections"
+			],
+			[
+				"devS",
+				"devSectionsCount"
+			],
+			[
+				"sz",
+				"size_t"
+			],
+			[
+				"sec",
+				"section"
+			],
+			[
+				"border",
+				"bordersInit"
+			],
+			[
+				"clF",
+				"clFlush	Issues All Previously Queued Commands In Command Queue"
+			],
+			[
+				"cur",
+				"current_timestep_events"
+			],
+			[
+				"totaln",
+				"totalNumGroups"
+			],
+			[
+				"cont",
+				"lbm_context"
+			],
+			[
+				"con",
+				"lbm_context"
+			],
+			[
+				"cal",
+				"calc_av_vels_local_size"
+			],
+			[
+				"num",
+				"numSectionsOnPoint"
+			],
+			[
+				"nums",
+				"numSectionsOnPoint"
+			],
+			[
+				"size",
+				"size_t"
+			],
+			[
+				"av",
+				"av_vels_offsets"
+			],
+			[
+				"found",
+				"foundRect〔variable〕"
+			],
+			[
+				"wri",
+				"writeString"
+			],
+			[
+				"_p",
+				"_polys"
+			],
+			[
+				"is",
+				"isInRange"
+			],
+			[
+				"_po",
+				"_polys〔variable〕"
+			],
+			[
+				"param",
+				"param_t"
+			],
+			[
+				"ny",
+				"ny_of_two"
+			],
+			[
+				"nx",
+				"nx_of_two"
+			],
+			[
+				"tot",
+				"tot_cells"
+			],
+			[
+				"clGetKe",
+				"clGetKernelWorkGroupInfo	Returns Information About The Kernel Object That May Be Device Specific"
+			],
+			[
+				"lbm",
+				"lbm_context"
+			],
+			[
+				"CL_MEM_COP",
+				"CL_MEM_COPY_HOST_PTR"
+			],
+			[
+				"clCrea",
+				"clCreateKernel	Creates A Kernel Object"
+			],
+			[
+				"speed",
+				"speed_t"
+			],
+			[
+				"tmp",
+				"tmp_cells"
+			],
+			[
+				"spee",
+				"speeds"
+			],
+			[
+				"d_",
+				"d_obstacles"
+			],
+			[
+				"controll",
+				"controllerVertical"
+			],
+			[
+				"log",
+				"log	Debug.*(message, context)"
+			],
+			[
+				"lb",
+				"lbm_job_submit"
+			],
+			[
+				"data",
+				"dataName〔variable〕"
+			],
+			[
+				"bat",
+				"batteryState〔variable〕"
+			],
+			[
+				"seconds",
+				"secondsSinceCharge"
+			],
+			[
+				"rea",
+				"readFloatBE"
+			],
+			[
+				"instac",
+				"instances"
+			],
+			[
+				"add",
+				"addString〔function〕"
+			],
+			[
+				"new",
+				"newSphero〔argument〕"
+			],
+			[
+				"inst",
+				"instances〔variable〕"
+			],
+			[
+				"sphero",
+				"spheroManager"
+			],
+			[
+				"mag",
+				"magnitude"
+			],
+			[
+				"ga",
+				"GaussianBlur"
+			],
+			[
+				"dy",
+				"dyimage"
+			],
+			[
+				"dx",
+				"dximage"
+			],
+			[
+				"update",
+				"updatePerSecond"
+			],
+			[
+				"de",
+				"deviceName"
+			],
+			[
+				"dev",
+				"deviceName〔argument〕"
+			],
+			[
+				"connec",
+				"connectedSpheros〔variable〕"
+			],
+			[
+				"call",
+				"callback〔argument〕"
+			],
+			[
+				"devic",
+				"deviceName"
+			],
+			[
+				"remove",
+				"removeSphero〔function〕"
+			],
+			[
+				"devi",
+				"deviceNames"
+			],
+			[
+				"connecte",
+				"connectedSpheros"
+			],
+			[
+				"devc",
+				"deviceNames"
+			],
+			[
+				"spe",
+				"speeds"
+			],
+			[
+				"cell",
+				"cells_ptr"
+			],
+			[
+				"acc",
+				"accel_area"
+			],
+			[
+				"ac",
+				"accel_area"
+			],
+			[
+				"acce",
+				"accel_area"
+			],
+			[
+				"to",
+				"tot_cells"
+			],
+			[
+				"y",
+				"y_pos"
+			],
+			[
+				"x",
+				"x_pos"
+			],
+			[
+				"obs_x",
+				"obs_x_min"
+			],
+			[
+				"omp",
+				"omp_set_num_threads"
+			],
+			[
+				"old",
+				"oldSplit"
+			],
+			[
+				"E",
+				"EXIT_SUCCESS"
+			],
+			[
+				"NU",
+				"NUMTHREADS"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/Makefile/Make.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/C++/C++ Single File.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/LaTeXing/LaTeX.sublime-build",
+					""
+				],
+				[
+					"Packages/LaTeXing/LaTeX.sublime-build",
+					"Clean up Files"
+				]
+			],
+			[
+				"Packages/LaTeXing/LaTeX.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 165.0,
+		"last_filter": "disab",
+		"selected_items":
+		[
+			[
+				"disab",
+				"Package Control: Disable Package"
+			],
+			[
+				"jsbea",
+				"Javascript Beautify"
+			],
+			[
+				"isnta",
+				"Package Control: Install Package"
+			],
+			[
+				"prettify",
+				"HTMLPrettify: Set Prettify Preferences"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"format",
+				"SublimeAStyleFormatter: Format Current File"
+			],
+			[
+				"enba",
+				"Package Control: Enable Package"
+			],
+			[
+				"markd",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"gl",
+				"Glue - Launch"
+			],
+			[
+				"glue ls",
+				"GoSublime: Default Settings"
+			],
+			[
+				"glue",
+				"Glue - Launch"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"disabl",
+				"Package Control: Disable Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"mar",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"markdo",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"mark",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"styleforma",
+				"SublimeAStyleFormatter: Format Current File"
+			],
+			[
+				"packa",
+				"Package Control: List Packages"
+			],
+			[
+				"pretti",
+				"HTMLPrettify: Set Plugin Options"
+			],
+			[
+				"prett",
+				"HTMLPrettify"
+			],
+			[
+				"pacage",
+				"Package Control: List Packages"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"goimport",
+				"GoImports"
+			],
+			[
+				"goimp",
+				"GoImports"
+			],
+			[
+				"goimpo",
+				"GoImports"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"md",
+				"Set Syntax: Markdown"
+			],
+			[
+				"goim",
+				"GoSublime: Read Me"
+			],
+			[
+				"wrap",
+				"Word Wrap: Toggle"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"i",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 575.0
+	},
+	"console":
+	{
+		"height": 579.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/jamus/dev/rollout/spherocontrol/package.json",
+		"/Users/jamus/dev/rollout/spherocontrol/cvsphero/SpheroDetector/SpheroDetector.cpp",
+		"/Users/jamus/dev/rollout/spherocontrol/spheroLoc.js",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/User/JsFormat.sublime-settings",
+		"/Users/jamus/dev/rollout/spherocontrol/server.js",
+		"/Users/jamus/dev/rollout/spherocontrol/index.htm",
+		"/Users/jamus/dev/rollout/spherocontrol/spheroManager/index.js",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/HTML-CSS-JS Prettify/.jsbeautifyrc",
+		"/Users/jamus/dev/rollout/rollout/Assets/Test.cs",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/Projectile.cs",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/ProjectileControl.cs",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/GenerateLevel.cs",
+		"/Users/jamus/dev/rollout/rollout/Assets/SpheroManager.cs",
+		"/Users/jamus/dev/rollout/rollout/Assets/Server.cs",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/PlayerControl.cs",
+		"/Users/jamus/dev/cs/ComputerGraphics/template/Makefile",
+		"/Users/jamus/dev/cs/ComputerGraphics/template/Source/SDLauxiliary.h",
+		"/Users/jamus/dev/cs/ComputerGraphics/template/Source/TestModel.h",
+		"/Users/jamus/dev/cs/ComputerGraphics/template/Source/skeleton.cpp",
+		"/Users/jamus/dev/rollout/.gitignore",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/GUIController.cs",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/Projectile",
+		"/Users/jamus/dev/cs/ComputerGraphics/template/gfx.sublime-project",
+		"/Users/jamus/dev/sphero.js/lib/adaptors/serialport.js",
+		"/Users/jamus/dev/sphero.js/spec/lib/adaptors/serialport.spec.js",
+		"/Users/jamus/dev/sphero.js/package.json",
+		"/Users/jamus/dev/wales/lbm.c",
+		"/Users/jamus/dev/wales/Makefile",
+		"/Users/jamus/dev/wales/lbm.h",
+		"/Users/jamus/dev/ogl-OpenGL-tutorial_0015_33/tutorial02_red_triangle/tutorial02.cpp",
+		"/Users/jamus/dev/ogl-OpenGL-tutorial_0015_33/tutorial04_colored_cube/tutorial04.cpp",
+		"/Users/jamus/dev/ogl-OpenGL-tutorial_0015_33/tutorial04_colored_cube/TransformVertexShader.vertexshader",
+		"/Users/jamus/dev/wales/shaders/lbm.frag",
+		"/Users/jamus/dev/wales/shaders/lbm.vert",
+		"/Users/jamus/dev/ogl-OpenGL-tutorial_0015_33/tutorial04_colored_cube/ColorFragmentShader.fragmentshader",
+		"/Users/jamus/dev/ogl-OpenGL-tutorial_0015_33/tutorial03_matrices/SingleColor.fragmentshader",
+		"/Users/jamus/dev/wales/shaders/font.vert",
+		"/Users/jamus/dev/oglbuild/playground",
+		"/Users/jamus/dev/cs/ai/lab1/movies.pl",
+		"/Users/jamus/dev/wales/final_state.plt",
+		"/Users/jamus/dev/wales/box.params",
+		"/Users/jamus/dev/wales/final_state.png",
+		"/Users/jamus/dev/wales/opencl.c",
+		"/Users/jamus/dev/wales/utils.c",
+		"/Users/jamus/dev/wales/kernels.cl",
+		"/Users/jamus/dev/wales/M",
+		"/Users/jamus/dev/wales/simulation.c",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/lbm.h",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/utils.c",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/simulation.c",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/Makefile",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/lbm.c",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/kernels.cl",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/opencl.c",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/box.params",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/rectify.js",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/final_state.dat",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/simulation/simulation.c",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/final_state.png",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/final_state.p",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/rootsubmission/utils.h",
+		"/Users/jamus/dev/UoB-HPC-LBM-2015/simulation/final_state.png",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/simulation/kernels.cl",
+		"/Users/jamus/dev/UoB-HPC-LBM-2015/simulation/kernels.cl",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/CollisionAttack.cs",
+		"/Users/jamus/dev/sphero.js/lib/sphero.js",
+		"/Users/jamus/dev/rollout/spherocontrol/spheroManager/package.json",
+		"/Users/jamus/dev/rollout/spherocontrol/cvsphero/SpheroDetector/Makefile",
+		"/Users/jamus/dev/rollout/spherocontrol/cvsphero/detectSphero.cpp",
+		"/Users/jamus/dev/rollout/rollout/Assets/Scripts/SpecialField.cs",
+		"/Users/jamus/dev/rollout/rollout/ProjectSettings/ProjectSettings.asset",
+		"/Users/jamus/dev/rollout/spherocontrol/cvsphero/canny.cpp",
+		"/Users/jamus/dev/rollout/spherocontrol/cvsphero/ayl.cpp",
+		"/Users/jamus/dev/rollout/spherocontrol/cvsphero/SpheroDetector/SpheroDetector",
+		"/Users/jamus/dev/cfd/results/cells.csv",
+		"/Users/jamus/dev/cfd/results/nocells.csv",
+		"/Users/jamus/dev/cfd/results/doit.py",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/simulation/mat2img",
+		"/Users/jamus/dev/cs/mirror/update",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/GoSublime/CHANGELOG.md",
+		"/Users/jamus/Downloads/coreutils-8.24/src/uptime.c",
+		"/Users/jamus/Downloads/coreutils-8.24/src/sleep.c",
+		"/Users/jamus/Downloads/coreutils-8.24/src/rm.c",
+		"/Users/jamus/Downloads/coreutils-8.24/src/ls.c",
+		"/Volumes/Nehalem store/backup/nix/jfs/tools/backups/nehalem-14-12-14/usb/Da tings/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/search.json",
+		"/Volumes/Nehalem store/backup/nix/jfs/tools/backups/nehalem-14-12-14/usb/Da tings/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/bookmarkbackups/bookmarks-2014-11-13_10_qKNO85onbaYS5LKjXvH-HQ==.json",
+		"/Volumes/Nehalem store/backup/Shared/drd/dl",
+		"/TMVersion.ini",
+		"/Users/jamus/Downloads/ec2gaming-tblk/client.ovpn",
+		"/Users/jamus/Downloads/Dropbox/client.ovpn",
+		"/Users/jamus/Downloads/vpn/server.ovpn",
+		"/Users/jamus/Downloads/vpn.tblk/up.sh",
+		"/Users/jamus/Downloads/vpn.tblk/down.sh",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/Ma",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/lbm_job",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/lbm.h",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/go",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/Makefile",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/lbm.c",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/utils.c",
+		"/Users/jamus/dev/cs/HPC/UoB-HPC-Examples-2015/mpi/examples/example11/README",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/run",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/Glue/Glue.sublime-settings",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/User/Glue.sublime-settings",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/GoSublime/GoSublime.sublime-settings",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/User/ShellCommand.sublime-commands",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/ShellCommand/Default.sublime-commands",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/User/ShellCommand.sublime-keymap",
+		"/Users/jamus/Library/Application Support/Sublime Text 3/Packages/User/ShellCommand.sublime-settings",
+		"/Users/jamus/dev/cs/HPC/openmpcoursework/simulation/utils.c",
+		"/Users/jamus/dev/cs/HPC/openmpcoursework/simulation/simulation.c",
+		"/Users/jamus/dev/cs/HPC/openmpcoursework/simulation/lbm_job_submit",
+		"/Users/jamus/Downloads/fvpm/src/main.cpp",
+		"/Users/jamus/Downloads/fvpm/src/Vector3/Vector3.cpp",
+		"/Users/jamus/Downloads/fvpm/src/Cell/Cell.cpp",
+		"/Users/jamus/Downloads/fvpm/src/Particle/Particle.cpp",
+		"/Users/jamus/Downloads/fvpm/src/src.mk",
+		"/Users/jamus/dev/cs/HPC/openmpcoursework/simulation/Makefile",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/utils.h",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/jobno",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/simulation/lbm_job",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/simulation/Makefile",
+		"/Users/jamus/dev/cs/HPC/openclcoursework/simulation/Ma",
+		"/Users/jamus/dev/cs/HPC/mpicoursework/simulation/lbm_job_submit",
+		"/Users/jamus/.amethyst",
+		"/Users/jamus/dev/cs/Image Processing/coursework/linethresholdedspace.jpg",
+		"/Users/jamus/dev/cs/Image Processing/coursework/linehoughspace.jpg"
+	],
+	"find":
+	{
+		"height": 70.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"save",
+			"100",
+			"data",
+			"50",
+			"100",
+			"spheroState.rel",
+			"abs",
+			"1",
+			"drawAbs",
+			"requestAnimationFrame",
+			"ctx",
+			"canvas",
+			"msg",
+			"adaptor",
+			"triangles[i]",
+			"tri",
+			"closestTriangle",
+			"closest",
+			"Intersection",
+			"float",
+			"stderr",
+			"GL_CHECK",
+			"LOGD",
+			"float",
+			"glCreateProgram",
+			"4",
+			"GL_STATIC_DRAW",
+			"setupPointLocations",
+			"setcolours",
+			"glenablevertexattr",
+			"float",
+			"GL_ARRAY_BUFFER",
+			"mag",
+			"GL_TEXTURE_2D",
+			"2,",
+			"params.",
+			"context",
+			"\n                                        ",
+			"magtext",
+			"char",
+			"uchar",
+			"numSections",
+			"device",
+			"printf",
+			"float",
+			"av_Vel",
+			"512",
+			"128",
+			"  ",
+			"calc_",
+			"box",
+			"NS ",
+			"NS",
+			"re",
+			"UnityEngine",
+			"GameObject",
+			" + ",
+			"velocity",
+			"boo",
+			"loc.",
+			"loc",
+			"()",
+			"getXPos",
+			"server",
+			"console.log",
+			"1000",
+			"round",
+			"100",
+			"floor",
+			"50",
+			":",
+			"window",
+			"ip",
+			"malloc",
+			"i",
+			"coordToPos",
+			"obstacles",
+			"side",
+			"workedObstSize",
+			"speedT",
+			"ii",
+			"jj",
+			"ii",
+			"jj",
+			"workerOffset",
+			"split",
+			"destinationRank",
+			"float",
+			"+ (1 - o) * */",
+			"5f",
+			"0f",
+			"f",
+			"float",
+			"MPI_FLOAT",
+			"type",
+			"MPI_FLOAT",
+			"float",
+			"avg",
+			"accel_area",
+			"number of sends",
+			"ny",
+			"params",
+			"localParams.ny",
+			"i",
+			" = malloc(sizeof(speedT) * 9 * localParams.ny);",
+			"double",
+			"submission",
+			"float",
+			"MPI_FLOAT",
+			"x);\n            const double y_pos = ii * (BOX_Y_SIZE / params->",
+			"params->",
+			"cells",
+			"obstacles",
+			"cells",
+			"jj",
+			"ii",
+			"coordToMem",
+			"params",
+			"(*cells_ptr)",
+			"localParams.ny * localParams.nx + localParams.ny * 2",
+			"coordToMem",
+			"coordToLMem",
+			"cells",
+			"stderr",
+			"MPI_Type_param",
+			"val",
+			"initialiseOtherProcesses",
+			"params"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"speed_t",
+			"speeds[8]",
+			"speeds[0]",
+			"speeds[10]"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.9o:///Users/jamus/projects/gostuff":
+	{
+		"height": 118.0
+	},
+	"output.GoSublime-main-output":
+	{
+		"height": 112.0
+	},
+	"output.MarGo-output":
+	{
+		"height": 118.0
+	},
+	"output.astyle_error_message":
+	{
+		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 319.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Make",
+	"project": "gfx.sublime-project",
+	"replace":
+	{
+		"height": 52.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"terminal.glue"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+		"_vintageous_last_char_search_command": "vi_f",
+		"_vintageous_last_character_search": "e",
+		"_vintageous_reset_during_init": true,
+		"vintage":
+		{
+			"_cmdline_cd": "/Users/jamus/dev/rollout/rollout/Assets/Scripts"
+		}
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 145.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

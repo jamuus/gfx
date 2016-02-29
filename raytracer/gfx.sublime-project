@@ -1,0 +1,13 @@
+{
+    "env":
+        {
+            "GLMDIR":"/usr/local/Cellar/glm/0.9.7.1/"
+        },
+    "build_systems":
+        [
+            {
+                "name": "Make",
+                "shell_cmd": "export GLMDIR=/usr/local/Cellar/glm/0.9.7.1/; cd ..;make",
+            }
+        ]
+}
