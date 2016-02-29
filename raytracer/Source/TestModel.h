@@ -92,8 +92,11 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     triangles.push_back( Triangle( F, H, G, cyan ) );
 
     vec3 offset(L / 2 - 50, 480, L / 2 - 50);
-    triangles.push_back( Triangle( E / 10.0f + offset, F / 10.0f + offset, G / 10.0f + offset, white, 14.0f * vec3(1, 1, 1)) );
-    triangles.push_back( Triangle( F / 10.0f + offset, H / 10.0f + offset, G / 10.0f + offset, white, 14.0f * vec3(1, 1, 1)) );
+    float lightIntensity = 100.0f;
+    triangles.push_back( Triangle( E / 10.0f + offset, F / 10.0f + offset, G / 10.0f + offset, white,
+                                   lightIntensity * vec3(1, 1, 1)) );
+    triangles.push_back( Triangle( F / 10.0f + offset, H / 10.0f + offset, G / 10.0f + offset, white,
+                                   lightIntensity * vec3(1, 1, 1)) );
 
     // Back wall
     triangles.push_back( Triangle( G, D, C, white ) );

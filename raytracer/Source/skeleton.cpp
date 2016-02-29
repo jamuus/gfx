@@ -141,6 +141,23 @@ vector<vec3> GenerateRays()
     return rays;
 }
 
+vector<vec3> GenerateRays(vec3 norm)
+{
+    srand (time(NULL));
+    vector<vec3> rays;
+    for (int i = 0; i < NUM_RAYS; i++) {
+        float z = rand() / (RAND_MAX / 2.0f) - 1;
+        float rxy = sqrt(1 - z * z);
+        float phi = rand() / (RAND_MAX / (2 * PI));
+        float x = rxy * cos(phi);
+        float y = rxy * sin(phi);
+        vec3 ray(x, y, z);
+        // ray /= 10.0f;
+        rays.push_back(ray);
+    }
+    return rays;
+}
+
 void Update()
 {
     // Compute frame time:
@@ -206,7 +223,9 @@ vec3 bottomLeft(1, 1, 0); // yellow?
 
 float f = SCREEN_HEIGHT / 2;
 
-vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth, vec3 raycolor)
+#define MAXDEPTH 2
+
+vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
 {
     Intersection i;
     if (depth > 0) {
@@ -215,28 +234,39 @@ vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth, vec3 raycolor)
                                 dir,
                                 model,
                                 i)) {
-            // total distance to this point from camera
-            float r = dist(pos, i.position) + totDist;
+            Triangle t = model[i.triangleIndex];
 
-            float A = 4.0f * PI * r * r;
-            vec3 B = raycolor / A;
-            vec3 nhat = model[i.triangleIndex].normal;
-            nhat = nhat / dist(vec3(0, 0, 0), nhat);
+            if (t.lightSource) {
+                return t.intensity;
+            } else {
+                vec3 nhat = t.normal;
+                nhat = nhat / dist(vec3(0, 0, 0), nhat);
 
-            vec3 rhat = pos - i.position;
-            rhat = rhat / dist(vec3(0, 0, 0), rhat);
+                float r = dist(pos, i.position) + totDist;
+                float A = 4.0f * PI * r * r;
 
-            vec3 D = B * max(dot(rhat, nhat), 0.0f);
+                vec3 reflecteddir = dir - 2.0f * nhat * dot(dir, nhat);
 
-            // raycolor = model[i.triangleIndex].color * raycolor;
-            // raycolor = raycolor / dist(vec3(0, 0, 0), raycolor) * reflectedPower;
+                vec3 powOfNextPoint = shootRay(i.position, reflecteddir, r, depth - 1);
 
-            vec3 reflecteddir = dir - 2.0f * nhat * dot(dir, nhat);
-            vec3 result = shootRay(i.position, reflecteddir, r, depth - 1, raycolor);
-            return result;
+                vec3 B = powOfNextPoint / A;
+
+                vec3 rhat = pos - i.position;
+                rhat = rhat / dist(vec3(0, 0, 0), rhat);
+
+                vec3 D = B *
+                         // fraction of light that is reflected
+                         max(dot(rhat, nhat), 0.0f);
+
+                return D;
+            }
         } else {
-            // do noting
+            // no intersection return black
+            return vec3(0, 0, 0);
         }
+    } else {
+        // if run out of depth return black
+        return vec3(0, 0, 0);
     }
 }
 
@@ -253,7 +283,19 @@ void Draw()
             vec3 rotatedRay = rayDir * R;
 
             vec3 colour;
-            // shootRay(cameraPos, rays[i], 0.0f, 0, lightColor);
+            Intersection i;
+            if (ClosestIntersection(cameraPos,
+                                    rotatedRay,
+                                    model,
+                                    i)) {
+                Triangle t = model[i.triangleIndex];
+
+                vector<vec3> rays = GenerateRays(t.normal);
+                for (int i = 0; i < rays.size(); i++) {
+                    colour = shootRay(cameraPos, rays[i], 0.0f, MAXDEPTH);
+                }
+            }
+
 
             PutPixelSDL(screen, x, y, colour);
         }
