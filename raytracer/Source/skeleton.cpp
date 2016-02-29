@@ -4,6 +4,7 @@
 #include "SDLauxiliary.h"
 #include "TestModel.h"
 #include <stdlib.h>     /* srand, rand */
+#include <omp.h>
 
 
 using namespace std;
@@ -15,9 +16,10 @@ using glm::mat3;
 
 const int SCREEN_WIDTH = 600;
 const int SCREEN_HEIGHT = 600;
-const int NUM_RAYS = 10000;
-const int NUM_BOUNCES = 100;
+const int NUM_RAYS = 1000;
 const int NUM_SAMPLES = 1;
+#define MAXDEPTH 1
+
 vec3 image[SCREEN_WIDTH * SCREEN_HEIGHT * NUM_SAMPLES];
 
 SDL_Surface* screen;
@@ -63,16 +65,17 @@ void InitImage()
 
 int main( int argc, char* argv[] )
 {
+    srand (time(NULL));
     InitImage();
     LoadTestModel(model);
     screen = InitializeSDL( SCREEN_WIDTH, SCREEN_HEIGHT );
     t = SDL_GetTicks(); // Set start value for timer.
 
 
-    while ( NoQuitMessageSDL() ) {
-        Update();
-        Draw();
-    }
+    // while ( NoQuitMessageSDL() ) {
+    Update();
+    Draw();
+    // }
     cout << endl;
 
     SDL_SaveBMP( screen, "screenshot.bmp" );
@@ -126,7 +129,7 @@ float reflectedPower = 3.0f;
 
 vector<vec3> GenerateRays()
 {
-    srand (time(NULL));
+    // srand (time(NULL));
     vector<vec3> rays;
     for (int i = 0; i < NUM_RAYS; i++) {
         float z = rand() / (RAND_MAX / 2.0f) - 1;
@@ -143,17 +146,36 @@ vector<vec3> GenerateRays()
 
 vector<vec3> GenerateRays(vec3 norm)
 {
-    srand (time(NULL));
+    // srand (time(NULL));
+
     vector<vec3> rays;
     for (int i = 0; i < NUM_RAYS; i++) {
-        float z = rand() / (RAND_MAX / 2.0f) - 1;
-        float rxy = sqrt(1 - z * z);
-        float phi = rand() / (RAND_MAX / (2 * PI));
-        float x = rxy * cos(phi);
-        float y = rxy * sin(phi);
+        float theta = ((rand() / RAND_MAX) * 2 * PI) - PI;
+        float azi   = (rand() / RAND_MAX) * PI - PI;
+        float x = sin(theta) * cos(azi);
+        float y = sin(theta) * sin(azi);
+        float z = cos(theta);
+
+        vec3 o(1, 0, 0);
+        vec3 v = cross(norm, o);
+
+        mat3 v_x(0, v.z, v.y,
+                 v.z, 0, -v.x,
+                 -v.y, v.x, 0);
+
+        float s = length(v);
+        float c = dot(v, o);
+
+        mat3 R = mat3(1, 0, 0,
+                      0, 1, 0,
+                      0, 0, 1) +
+                 v_x + v_x * v_x *
+                 ((1.0f - c) / (s * s));
+
         vec3 ray(x, y, z);
-        // ray /= 10.0f;
-        rays.push_back(ray);
+        ray /= length(ray);
+
+        rays.push_back(ray * R);
     }
     return rays;
 }
@@ -212,7 +234,7 @@ void Update()
     R[1] = vec3( 0,        1, 0);
     R[2] = vec3(-sin(yaw), 0, cos(yaw));
 
-    printf("Render time: %.4f ms - %.4f fps   \r", dt, (1 / dtsec));
+    // printf("Render time: %.4f ms - %.4f fps   \r", dt, (1 / dtsec));
     flush(cout);
 }
 
@@ -223,7 +245,6 @@ vec3 bottomLeft(1, 1, 0); // yellow?
 
 float f = SCREEN_HEIGHT / 2;
 
-#define MAXDEPTH 2
 
 vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
 {
@@ -270,34 +291,46 @@ vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
     }
 }
 
+
 void Draw()
 {
+    int numthreads = 4;
+    omp_set_num_threads(numthreads);
+    printf("numthreads: %d\n", numthreads);
+
+
     SDL_FillRect( screen, 0, 0 );
 
     if ( SDL_MUSTLOCK(screen) )
         SDL_LockSurface(screen);
 
+    #pragma omp parallel for
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
             vec3 rayDir(x - SCREEN_WIDTH / 2, y - SCREEN_HEIGHT / 2, f);
             vec3 rotatedRay = rayDir * R;
 
-            vec3 colour;
+            vec3 colour(0, 0, 0);
             Intersection i;
             if (ClosestIntersection(cameraPos,
                                     rotatedRay,
                                     model,
                                     i)) {
                 Triangle t = model[i.triangleIndex];
-
-                vector<vec3> rays = GenerateRays(t.normal);
-                for (int i = 0; i < rays.size(); i++) {
-                    colour = shootRay(cameraPos, rays[i], 0.0f, MAXDEPTH);
+                if (t.lightSource) {
+                    colour = t.intensity;
+                } else {
+                    vector<vec3> rays = GenerateRays();
+                    for (int j = 0; j < rays.size(); j++) {
+                        colour += shootRay(i.position, rays[j], 0.0f, MAXDEPTH);
+                    }
+                    colour /= rays.size();
                 }
+                // image[x * SCREEN_WIDTH + y] = colour;
             }
-
-
             PutPixelSDL(screen, x, y, colour);
+            if (omp_get_thread_num() == 0)
+                printf("%.4f\%\r", numthreads * 100.0 * (y * (float)SCREEN_HEIGHT + x) / (SCREEN_HEIGHT * SCREEN_WIDTH));
         }
     }
 

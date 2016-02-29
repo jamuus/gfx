@@ -10,9 +10,9 @@ B_DIR=Build
 EXEC=$(B_DIR)/$(FILE)
 
 # default build settings
-CC_OPTS=-c -pipe -Wall -Wno-switch -ggdb -g3 -Ofast
-LN_OPTS=
-CC=g++
+CC_OPTS=-c -pipe -Wall -Wno-switch -ggdb -g3 -Ofast -fopenmp
+LN_OPTS=-fopenmp
+CC=g++-5
 
 ########
 #       SDL options
