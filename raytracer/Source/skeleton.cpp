@@ -16,7 +16,7 @@ using glm::mat3;
 
 const int SCREEN_WIDTH = 300;
 const int SCREEN_HEIGHT = 300;
-const int NUM_RAYS = 100000;
+const int NUM_RAYS = 5000;
 const int NUM_SAMPLES = 1;
 #define MAXDEPTH 1
 
@@ -65,12 +65,11 @@ void InitImage()
 
 int main( int argc, char* argv[] )
 {
-    srand (time(NULL));
-    InitImage();
+    srand(time(NULL));
+    // InitImage();
     LoadTestModel(model);
-    screen = InitializeSDL( SCREEN_WIDTH, SCREEN_HEIGHT );
+    screen = InitializeSDL(SCREEN_WIDTH, SCREEN_HEIGHT);
     t = SDL_GetTicks(); // Set start value for timer.
-
 
     // while ( NoQuitMessageSDL() ) {
     Update();
@@ -78,7 +77,7 @@ int main( int argc, char* argv[] )
     // }
     cout << endl;
 
-    SDL_SaveBMP( screen, "screenshot.bmp" );
+    SDL_SaveBMP(screen, "screenshot.bmp");
     return 0;
 }
 
@@ -90,42 +89,7 @@ float yaw = 0.0f;
 vec3 lightPos(0, -0.5, -0.7);
 vec3 indirectLight = 0.5f * vec3( 1, 1, 1 );
 vec3 lightColor = 5.f * vec3(1, 1, 1);
-float reflectedPower = 3.0f;
-
-// void InitBucket()
-// {
-//     grid = (vec3*) calloc(sizeof(vec3), (NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * NUM_BOUNCES));
-//     for (int i = 0; i < NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * NUM_BOUNCES; i++) {
-//         grid[i] = vec3(0.0f, 0.0f, 0.0f);
-//     }
-// }
-
-// float maxdim = 1.01;
-// float filterSize = 5.0f;
-
-// void SetBucket(vec3 a, vec3 power, int depth)
-// {
-//     vec3 temp = (a + maxdim) / (2 * maxdim) * (float)NUM_BUCKETS;
-//     temp.x = (int)temp.x, temp.y = (int)temp.y, temp.z = (int)temp.z;
-//     int position = (int) ((NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * depth) + (NUM_BUCKETS * NUM_BUCKETS * temp.z) + (NUM_BUCKETS * temp.y) + temp.x);
-//     // grid[position] = power;
-//     grid[position] = grid[position] - (grid[position] / filterSize) + power / filterSize;
-// }
-
-// // void IncBucket(vec3 a, vec3 power)
-// // {
-// //     vec3 oldval = GetBucket(a);
-// //     SetBucket(a, oldval + power);
-// // }
-
-// vec3 GetBucket(vec3 a, int depth)
-// {
-//     vec3 temp = (a + maxdim) / (2 * maxdim) * (float)NUM_BUCKETS;
-//     temp.x = (int)temp.x, temp.y = (int)temp.y, temp.z = (int)temp.z;
-//     int position = (int) ((NUM_BUCKETS * NUM_BUCKETS * NUM_BUCKETS * depth) + (NUM_BUCKETS * NUM_BUCKETS * temp.z) + (NUM_BUCKETS * temp.y) + temp.x);
-//     vec3 spixy = grid[position];
-//     return spixy;
-// }
+// float reflectedPower = 3.0f;
 
 vector<vec3> GenerateRays()
 {
@@ -150,32 +114,35 @@ vector<vec3> GenerateRays(vec3 norm)
 
     vector<vec3> rays;
     for (int i = 0; i < NUM_RAYS; i++) {
-        float theta = ((rand() / RAND_MAX) * 2 * PI) - PI;
-        float azi   = (rand() / RAND_MAX) * PI - PI;
-        float x = sin(theta) * cos(azi);
-        float y = sin(theta) * sin(azi);
-        float z = cos(theta);
+        // float theta = ((rand() / RAND_MAX) * 2 * PI) - PI;
+        // float azi   = (rand() / RAND_MAX) * 2 * PI - PI;
+        // float x = sin(theta) * cos(azi);
+        // float y = sin(theta) * sin(azi);
+        // float z = cos(theta);
+        float x = (rand() / RAND_MAX) - 0.5;
+        float y = (rand() / RAND_MAX) - 0.5;
+        float z = (rand() / RAND_MAX) - 0.5;
 
-        vec3 o(1, 0, 0);
-        vec3 v = cross(norm, o);
+        // vec3 o(1, 0, 0);
+        // vec3 v = cross(norm, o);
 
-        mat3 v_x(0, v.z, v.y,
-                 v.z, 0, -v.x,
-                 -v.y, v.x, 0);
+        // mat3 v_x(0, v.z, v.y,
+        //          v.z, 0, -v.x,
+        //          -v.y, v.x, 0);
 
-        float s = length(v);
-        float c = dot(v, o);
+        // float s = length(v);
+        // float c = dot(v, o);
 
-        mat3 R = mat3(1, 0, 0,
-                      0, 1, 0,
-                      0, 0, 1) +
-                 v_x + v_x * v_x *
-                 ((1.0f - c) / (s * s));
+        // mat3 R = mat3(1, 0, 0,
+        //               0, 1, 0,
+        //               0, 0, 1) +
+        //          v_x + v_x * v_x *
+        //          ((1.0f - c) / (s * s));
 
         vec3 ray(x, y, z);
         ray /= length(ray);
 
-        rays.push_back(ray * R);
+        rays.push_back(ray);
     }
     return rays;
 }
@@ -294,7 +261,7 @@ vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
 
 void Draw()
 {
-    int numthreads = 8;
+    int numthreads = 4;
     omp_set_num_threads(numthreads);
     printf("numthreads: %d\n", numthreads);
 
@@ -304,7 +271,6 @@ void Draw()
     if ( SDL_MUSTLOCK(screen) )
         SDL_LockSurface(screen);
 
-    vector<vec3> rays = GenerateRays();
 
     #pragma omp parallel for
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
@@ -322,6 +288,8 @@ void Draw()
                 if (t.lightSource) {
                     colour = t.intensity;
                 } else {
+
+                    vector<vec3> rays = GenerateRays();
                     for (int j = 0; j < rays.size(); j++) {
                         colour += shootRay(i.position, rays[j], 0.0f, MAXDEPTH);
                     }
