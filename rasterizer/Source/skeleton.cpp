@@ -23,18 +23,23 @@ float depthBuffer[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 vec3 lightPos(0, -0.5, -0.7);
 vec3 lightPower = 12.f * vec3( 1, 1, 1 );
-vec3 indirectLightPowerPerArea = 0.3f * vec3( 1, 1, 1 );
+vec3 indirectLightPowerPerArea = 0.1f * vec3( 1, 1, 1 );
 
 float focalLength = SCREEN_HEIGHT;
-vec3 cameraPosition(0, 0, -10);
+vec3 cameraPosition(0, 0, -4);
 
 vec3 currentNormal;
 vec3 currentReflectance;
 
+float yaw = 0.0f;
+float pitch = 0.0f;
 
-float translateSpeed = 1.0f;
+float translateSpeed = 2.0f;
 float rotateSpeed = 0.1f;
+float lightTranslateDist = 1.0f;
 mat3 R;
+
+vec3 image[SCREEN_WIDTH][SCREEN_HEIGHT];
 
 int dx;
 int dy;
@@ -43,7 +48,6 @@ struct Pixel {
     int x;
     int y;
     float zinv;
-    // vec3 illumination;
     vec3 pos3d;
 
     inline Pixel operator-(Pixel a)
@@ -87,13 +91,15 @@ int main( int argc, char* argv[] )
         for (int y = 0; y < SCREEN_HEIGHT; ++y)
             for (int x = 0; x < SCREEN_WIDTH; ++x)
                 depthBuffer[y][x] = 0;
+        fflush(stdout);
     }
+    printf("\n");
 
     SDL_SaveBMP( screen, "screenshot.bmp" );
     return 0;
 }
 
-float yaw = 0.0f;
+float averageFps = 0.0f;
 
 void Update()
 {
@@ -107,32 +113,74 @@ void Update()
     SDL_GetRelativeMouseState( &dx, &dy );
 
     Uint8* keystate = SDL_GetKeyState( 0 );
-    if ( keystate[SDLK_UP] ) {
+    // if ( keystate[SDLK_UP] ) {
+    if ( keystate[SDLK_w] ) {
         // Move camera forward
-        cameraPosition += (vec3(0, 0, 1) * dtsec * translateSpeed) * R;
+        cameraPosition += R * (vec3(0, 0, 1) * dtsec * translateSpeed);
     }
-    if ( keystate[SDLK_DOWN] ) {
+    // if ( keystate[SDLK_DOWN] ) {
+    if ( keystate[SDLK_s] ) {
         // Move camera backward
-        cameraPosition -= (vec3(0, 0, 1) * dtsec * translateSpeed) * R;
+        cameraPosition -= R * (vec3(0, 0, 1) * dtsec * translateSpeed);
     }
-    if ( keystate[SDLK_LEFT] ) {
+    // if ( keystate[SDLK_LEFT] ) {
+    if ( keystate[SDLK_a] ) {
         // Move camera to the left
-        cameraPosition -= (vec3(1, 0, 0) * dtsec * translateSpeed) * R;
+        cameraPosition -= R * (vec3(1, 0, 0) * dtsec * translateSpeed);
         // rotate left
         // yaw -= dtsec * rotateSpeed;
     }
-    if ( keystate[SDLK_RIGHT] ) {
+    // if ( keystate[SDLK_RIGHT] ) {
+    if ( keystate[SDLK_d] ) {
         // Move camera to the right
-        cameraPosition += (vec3(1, 0, 0) * dtsec * translateSpeed) * R;
+        cameraPosition += R * (vec3(1, 0, 0) * dtsec * translateSpeed);
+    }
+    if ( keystate[SDLK_UP] ) {
+        lightPos.z += lightTranslateDist * dtsec;
+    }
+    if ( keystate[SDLK_LEFT] ) {
+        lightPos.x -= lightTranslateDist * dtsec;
+    }
+    if ( keystate[SDLK_DOWN] ) {
+        lightPos.z -= lightTranslateDist * dtsec;
+    }
+    if ( keystate[SDLK_RIGHT] ) {
+        lightPos.x += lightTranslateDist * dtsec;
+    }
+    if ( keystate[SDLK_q] ) {
+        lightPos.y += lightTranslateDist * dtsec;
+    }
+    if ( keystate[SDLK_e] ) {
+        lightPos.y -= lightTranslateDist * dtsec;
     }
     yaw -= dx * dtsec * rotateSpeed;
+    pitch += dy * dtsec * rotateSpeed;
+
+    if (yaw > PI * 2)
+        yaw -= PI * 2;
+    if (yaw < 0)
+        yaw += PI * 2;
+
+    if (pitch > PI * 2)
+        pitch -= PI * 2;
+    if (pitch < 0)
+        pitch += PI * 2;
 
     R[0] = vec3( cos(yaw), 0, sin(yaw));
     R[1] = vec3( 0,        1, 0);
     R[2] = vec3(-sin(yaw), 0, cos(yaw));
 
+    mat3 rpitch;
+    rpitch[0] = vec3(1, 0, 0);
+    rpitch[1] = vec3(0, cos(pitch), -sin(pitch));
+    rpitch[2] = vec3(0, sin(pitch), cos(pitch));
+
+    R = R * rpitch;
+
+    averageFps = averageFps - (averageFps / 30) + ((1 / dtsec) / 30);
+
     // cout << "Render time: " << dt << " ms." << endl;
-    printf("Render time: %.4f ms - %.4f fps   \r", dt, (1 / dtsec));
+    printf("Render time: %.4f ms - %.4f fps %.4f avg ", dt, (1 / dtsec), averageFps);
 }
 
 void PixelShader(const Pixel& p)
@@ -140,7 +188,7 @@ void PixelShader(const Pixel& p)
     int x = p.x;
     int y = p.y;
     if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) {
-        printf("(%d, %d)\n", x, y);
+        // printf("(%d, %d)\n", x, y);
         return;
     }
     if ( p.zinv > depthBuffer[y][x] ) {
@@ -156,21 +204,23 @@ void PixelShader(const Pixel& p)
                                           + indirectLightPowerPerArea
                                          );
 
-        vec3 illumination = badR * currentColor
-                            // wew
-                            * R;
+        vec3 illumination = badR * currentColor;
+        // wew
+        // * R;
 
-        PutPixelSDL(screen, x, y, illumination);
-        // PutPixelSDL(screen, x, y, currentColor);
+        image[x][y] = illumination;
+
+        // PutPixelSDL(screen, x, y, illumination);
     }
 }
 
 void VertexShader( const Vertex& v, Pixel& p )
 {
-    vec3 newV = R * (v.position - cameraPosition);
-    p.x = (int)(focalLength * newV.x / newV.z + SCREEN_WIDTH / 2);
-    p.y = (int)(focalLength * newV.y / newV.z + SCREEN_HEIGHT / 2);
-    p.zinv = 1.0f / length(newV);
+    vec3 newV = (v.position - cameraPosition) * R;
+    p.zinv = 1.0f / newV.z;
+    p.x = (int)(focalLength * newV.x * p.zinv) + SCREEN_WIDTH / 2;
+    p.y = (int)(focalLength * newV.y * p.zinv) + SCREEN_HEIGHT / 2;
+
     p.pos3d = v.position;
     //lmao
     // * R;
@@ -256,25 +306,37 @@ void ComputePolygonRows(
 }
 
 
-void Interpolate( Pixel a1, Pixel b1, vector<Pixel>& result )
+void Interpolate( Pixel p1, Pixel p2, vector<Pixel>& result )
 {
-    vec3 a(a1.x, a1.y, a1.zinv);
-    vec3 b(b1.x, b1.y, b1.zinv);
+    ivec2 a(p1.x, p1.y);
+    ivec2 b(p2.x, p2.y);
     int N = result.size();
 
-    vec3 step1 = vec3(b - a) / float(glm::max(N - 1, 1));
-    vec3 step2 = vec3(b1.pos3d * b1.zinv - a1.pos3d * a1.zinv) / float(glm::max(N - 1, 1));
+    vec2 stepPixel = vec2(b.x - a.x, b.y - a.y) /
+                     float(glm::max(N - 1, 1));
 
-    vec3 current1( a );
-    vec3 current2( a1.pos3d * a1.zinv );
-    // printf("(%.4f,%.4f,%.4f)\n", current2.x, current2.y, current2.z);
+    vec3 stepPos = vec3(p2.pos3d * p2.zinv - p1.pos3d * p1.zinv ) /
+                   float(glm::max(N - 1, 1));
+
+    float stepZinv = (p2.zinv - p1.zinv) /
+                     float(glm::max(N - 1, 1));
+
+    vec2 itPix( a );
+    vec3 itPos( p1.pos3d * p1.zinv );
+    float itZinv =  p1.zinv;
+    // printf("(%.4f,%.4f,%.4f)\n", itPos.x, itPos.y, itPos.z);
+    // printf("%.1f, %.1f, %.1f %.1f\n", itPix.x, itPix.y, stepPixel.x, stepPixel.y);
 
     for ( int i = 0; i < N; ++i ) {
-        result[i] = (Pixel) {current1.x, current1.y, current1.z};
-        current1 += step1;
+        result[i].x = (int)itPix.x;
+        result[i].y = (int)itPix.y;
+        itPix += stepPixel;
 
-        result[i].pos3d = current2 / result[i].zinv;
-        current2 += step2;
+        result[i].zinv = itZinv;
+        itZinv += stepZinv;
+
+        result[i].pos3d = itPos / result[i].zinv;
+        itPos += stepPos;
     }
 }
 void Interpolate( ivec2 a, ivec2 b, vector<ivec2>& result )
@@ -306,6 +368,11 @@ void Draw()
     if ( SDL_MUSTLOCK(screen) )
         SDL_LockSurface(screen);
 
+    // Compute frame time:
+    // t1 = t2;
+    // float dtsec = dt / 1000.0f;
+    int t1 = SDL_GetTicks();
+
     for ( int i = 0; i < triangles.size(); ++i ) {
         vector<Vertex> vertices(3);
         vertices[0].position = triangles[i].v0;
@@ -316,14 +383,17 @@ void Draw()
         currentReflectance = vec3(1, 1, 1);
         currentColor = triangles[i].color;
 
-        // vertices[0].normal = triangles[i].normal;
-        // vertices[1].normal = triangles[i].normal;
-        // vertices[2].normal = triangles[i].normal;
-
-        // vertices[0].reflectance = vec3(1, 1, 1);
-        // vertices[1].reflectance = vec3(1, 1, 1);
-        // vertices[2].reflectance = vec3(1, 1, 1);
         DrawPolygon(screen, vertices);
+    }
+    int t2 = SDL_GetTicks();
+
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            // PutPixelSDL(screen, x, y, vec3(depthBuffer[y][x], 0, 0));
+            // printf("%.4f\n", depthBuffer[y][x] * 100);
+            PutPixelSDL(screen, x, y, image[x][y]);
+            image[x][y] = vec3(0, 0, 0);
+        }
     }
 
 
@@ -331,4 +401,10 @@ void Draw()
         SDL_UnlockSurface(screen);
 
     SDL_UpdateRect( screen, 0, 0, 0, 0 );
+
+    int t3 = SDL_GetTicks();
+    int computeTime = t2 - t1;
+    int renderTime = t3 - t1;
+
+    printf("%d ms compute, %d ms screen, %.4f ratio    \r", computeTime, renderTime, computeTime / ((float)renderTime + computeTime));
 }
