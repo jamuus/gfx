@@ -84,6 +84,7 @@ int main( int argc, char* argv[] )
     t = SDL_GetTicks(); // Set start value for timer.
     LoadTestModel(triangles);
 
+    SDL_WarpMouse(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 
     while ( NoQuitMessageSDL() ) {
         Update();
@@ -95,7 +96,7 @@ int main( int argc, char* argv[] )
     }
     printf("\n");
 
-    SDL_SaveBMP( screen, "screenshot.bmp" );
+    SDL_SaveBMP(screen, "screenshot.bmp");
     return 0;
 }
 
@@ -110,7 +111,10 @@ void Update()
     float dtsec = dt / 1000.0f;
 
 
-    SDL_GetRelativeMouseState( &dx, &dy );
+    SDL_GetMouseState( &dx, &dy );
+    SDL_WarpMouse(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    dx = dx - SCREEN_WIDTH / 2;
+    dy = dy - SCREEN_HEIGHT / 2;
 
     Uint8* keystate = SDL_GetKeyState( 0 );
     // if ( keystate[SDLK_UP] ) {
@@ -180,7 +184,7 @@ void Update()
     averageFps = averageFps - (averageFps / 30) + ((1 / dtsec) / 30);
 
     // cout << "Render time: " << dt << " ms." << endl;
-    printf("Render time: %.4f ms - %.4f fps %.4f avg ", dt, (1 / dtsec), averageFps);
+    printf("%.4f ms render, %.4f fps, %.4f avg, ", dt, (1 / dtsec), averageFps);
 }
 
 void PixelShader(const Pixel& p)
@@ -204,9 +208,9 @@ void PixelShader(const Pixel& p)
                                           + indirectLightPowerPerArea
                                          );
 
-        vec3 illumination = badR * currentColor;
-        // wew
-        // * R;
+        vec3 illumination = badR * currentColor
+                            // wew
+                            * R;
 
         image[x][y] = illumination;
 
@@ -406,5 +410,5 @@ void Draw()
     int computeTime = t2 - t1;
     int renderTime = t3 - t1;
 
-    printf("%d ms compute, %d ms screen, %.4f ratio    \r", computeTime, renderTime, computeTime / ((float)renderTime + computeTime));
+    printf("%d ms compute, %d ms screen, %.4f ratio \r", computeTime, renderTime, computeTime / ((float)renderTime + computeTime));
 }
