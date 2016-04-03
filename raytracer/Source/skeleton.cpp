@@ -17,7 +17,7 @@ using namespace glm;
 
 const int SCREEN_WIDTH = 400;
 const int SCREEN_HEIGHT = 400;
-const int NUM_RAYS = 1000;
+const int NUM_RAYS = 100000;
 const int NUM_SAMPLES = 1;
 #define MAXDEPTH 1
 
@@ -244,6 +244,11 @@ void Draw()
     // vec3 dir = normalize(vec3(0, 1, 0));
     // vector<vec3> rays = GenerateRays(dir);
 
+    int done[numthreads];
+    for (int i = 0; i < numthreads; i++) {
+        done[i] = 0;
+    }
+
     #pragma omp parallel for
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -270,10 +275,16 @@ void Draw()
                 // image[x * SCREEN_WIDTH + y] = colour;
             }
             PutPixelSDL(screen, x, y, colour);
-            if (omp_get_thread_num() == 0) {
-                printf("%.2f%%\r", numthreads * 100.0 * (y * (float)SCREEN_HEIGHT + x) / (SCREEN_HEIGHT * SCREEN_WIDTH));
-                fflush(stdout);
+            done[omp_get_thread_num()]++;
+
+            int total = 0;
+            for (int i = 0; i < numthreads; i++) {
+                total += done[i];
             }
+            // if (omp_get_thread_num() == 0) {
+            printf("%.2f%%   %d/%d   \r", total / ((float)SCREEN_HEIGHT * SCREEN_WIDTH) * 100.f, total, SCREEN_HEIGHT * SCREEN_WIDTH);
+            fflush(stdout);
+            // }
         }
     }
 
@@ -344,21 +355,12 @@ bool ClosestIntersection(
 
             vec3 Atop = vec3(A2, A5, A8) / Adet;
             float u = dot(Atop, b);
-            // mat3 Ainv = inverse(A);
             vec3 x = vec3(t, u, v);
-            // float t = x.x;
 
-            // printf("[%.4f, %.4f, %.4f]\n[%.4f, %.4f, %.4f]\n\n", Ainv[2].x, Ainv[2].y, Ainv[2].z, Abot.x, Abot.y, Abot.z);
-            // printf("%.4f, %.4f\n", t2, t);
-
-            // float u = x.y;
-            // float v = x.z;
             if (
                 u >= 0.0f &&
                 v >= 0.0f &&
                 u + v <= 1.0f
-                // t < closestX.x &&
-                // t >= 0.0f
             ) {
                 closestX = x;
                 index = i;
