@@ -25,7 +25,7 @@ SDL_LDFLAGS := $(shell sdl-config --libs)
 all:Build
 
 run:Build
-	./Build/skeleton
+	time ./Build/skeleton
 
 
 ########

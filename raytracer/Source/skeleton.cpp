@@ -8,15 +8,16 @@
 
 
 using namespace std;
-using glm::vec3;
-using glm::mat3;
+// using glm::vec3;
+// using glm::mat3;
+using namespace glm;
 #define PI 3.14159265358979323846f
 /* ----------------------------------------------------------------------------*/
 /* GLOBAL VARIABLES                                                            */
 
 const int SCREEN_WIDTH = 400;
 const int SCREEN_HEIGHT = 400;
-const int NUM_RAYS = 10000;
+const int NUM_RAYS = 1000;
 const int NUM_SAMPLES = 1;
 #define MAXDEPTH 1
 
@@ -102,15 +103,8 @@ void printVector(vec3 V)
     printf("(%.4f, %.4f, %.4f)\n", V.x, V.y, V.z);
 }
 
-vector<vec3> GenerateRays(vec3 norm)
+mat3 vectorRotation(vec3 a, vec3 b)
 {
-    // vec3 avgRay(0, 0, 0);
-
-    vec3 hemisphereTop(0.0f, 0.0f, 1.0f);
-
-    vec3 a = normalize(norm);
-    vec3 b = normalize(hemisphereTop);
-
     vec3 v = cross(a, b);
 
     float s = length(v);
@@ -126,10 +120,6 @@ vector<vec3> GenerateRays(vec3 norm)
                   0, 1, 0,
                   0, 0, 1);
 
-    // if (s < 1.e-4 && s > -1.e-4)
-    //     R = mat3(1, 0, 0,
-    //              0, 1, 0,
-    //              0, 0, 1);
     if (s != 0.0f) {
         R += v_x +
              v_x * v_x *
@@ -140,67 +130,41 @@ vector<vec3> GenerateRays(vec3 norm)
                   0, 1, 0,
                   0, 0, 1);
     }
-
-
-    // srand (time(NULL));
-    vector<vec3> rays;
-    for (int i = 0; i < NUM_RAYS; i++) {
-        // float z = rand() / (RAND_MAX / 2.0f) - 1; // -1 and 1
-
-        float z = rand() / (RAND_MAX / 1.0f); // 0 and 1
-        float rxy = sqrt(1 - z * z);
-        float phi = rand() / (RAND_MAX / (2 * PI));
-        float x = rxy * cos(phi);
-        float y = rxy * sin(phi);
-
-        vec3 ray(x, y, z);
-        ray = normalize(ray);
-        vec3 directedRay = R * ray;
-
-        rays.push_back(directedRay);
-    }
-
-    return rays;
+    return R;
 }
 
-// vector<vec3> GenerateRays(vec3 norm)
-// {
-//     // srand (time(NULL));
+vec3 generateRandomSphereVector()
+{
+    float z = rand() / (RAND_MAX / 2.0f) - 1; // -1 and 1
+    // float z = rand() / (RAND_MAX / 1.0f); // 0 and 1
 
-//     vector<vec3> rays;
-//     for (int i = 0; i < NUM_RAYS; i++) {
-//         // float theta = ((rand() / RAND_MAX) * 2 * PI) - PI;
-//         // float azi   = (rand() / RAND_MAX) * 2 * PI - PI;
-//         // float x = sin(theta) * cos(azi);
-//         // float y = sin(theta) * sin(azi);
-//         // float z = cos(theta);
-//         float x = (rand() / RAND_MAX) - 0.5;
-//         float y = (rand() / RAND_MAX) - 0.5;
-//         float z = (rand() / RAND_MAX) - 0.5;
+    float rxy = sqrt(1 - z * z);
+    float phi = rand() / (RAND_MAX / (2 * PI));
+    float x = rxy * cos(phi);
+    float y = rxy * sin(phi);
 
-//         // vec3 o(1, 0, 0);
-//         // vec3 v = cross(norm, o);
+    vec3 ray(x, y, z);
+    ray = normalize(ray);
+    return ray;
+}
 
-//         // mat3 v_x(0, v.z, v.y,
-//         //          v.z, 0, -v.x,
-//         //          -v.y, v.x, 0);
+vector<vec3> GenerateRays(vec3 norm)
+{
+    vec3 hemisphereTop(0.0f, 0.0f, 1.0f);
 
-//         // float s = length(v);
-//         // float c = dot(v, o);
+    mat3 R = vectorRotation(normalize(norm), normalize(hemisphereTop));
 
-//         // mat3 R = mat3(1, 0, 0,
-//         //               0, 1, 0,
-//         //               0, 0, 1) +
-//         //          v_x + v_x * v_x *
-//         //          ((1.0f - c) / (s * s));
+    vector<vec3> rays;
+    for (int i = 0; i < NUM_RAYS; i++) {
+        vec3 ray = generateRandomSphereVector();
+        if (ray.z < 0)
+            ray.z = -ray.z;
 
-//         vec3 ray(x, y, z);
-//         ray /= length(ray);
-
-//         rays.push_back(ray);
-//     }
-//     return rays;
-// }
+        vec3 directedRay = R * ray;
+        rays.push_back(directedRay);
+    }
+    return rays;
+}
 
 void Update()
 {
@@ -250,7 +214,7 @@ vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
 
                 vec3 D = B *
                          // fraction of light that is reflected
-                         max(dot(rhat, nhat), 0.0f);
+                         glm::max(dot(rhat, nhat), 0.0f);
 
                 return D;
             }
@@ -277,7 +241,7 @@ void Draw()
     if ( SDL_MUSTLOCK(screen) )
         SDL_LockSurface(screen);
 
-    vec3 dir = normalize(vec3(0, 1, 0));
+    // vec3 dir = normalize(vec3(0, 1, 0));
     // vector<vec3> rays = GenerateRays(dir);
 
     #pragma omp parallel for
@@ -296,7 +260,6 @@ void Draw()
                 if (t.lightSource) {
                     colour = t.intensity;
                 } else {
-
                     // vector<vec3> rays = GenerateRays(dir);
                     vector<vec3> rays = GenerateRays(t.normal);
                     for (int j = 0; j < rays.size(); j++) {
@@ -321,6 +284,7 @@ void Draw()
 }
 
 
+
 float m = std::numeric_limits<float>::max();
 
 bool ClosestIntersection(
@@ -340,17 +304,66 @@ bool ClosestIntersection(
         vec3 e2 = tri.v2 - tri.v0;
         vec3 b = start - tri.v0;
         mat3 A(-dir, e1, e2);
-        vec3 x = glm::inverse(A) * b;
-        if (
-            x.y >= 0.0f &&
-            x.z >= 0.0f &&
-            x.y + x.z <= 1.0f &&
-            x.x < closestX.x &&
-            x.x >= 0.0f
-        ) {
-            closestX = x;
-            index = i;
-            found = true;
+
+        float Adet = determinant(A);
+
+        float A0 = determinant(mat2(A[1].y, A[1].z,
+                                    A[2].y, A[2].z));
+
+        float A3 = determinant(mat2(A[1].z, A[1].x,
+                                    A[2].z, A[2].x));
+
+
+        float A6 = determinant(mat2(A[1].x, A[1].y,
+                                    A[2].x, A[2].y));
+
+        vec3 Abot = vec3(A0, A3, A6) / Adet;
+        float t = dot(Abot, b);
+
+        if (t < closestX.x && t >= 0.0f) {
+            float A1 = determinant(mat2(A[0].z, A[0].y,
+                                        A[2].z, A[2].y));
+
+            float A2 = determinant(mat2(A[0].y, A[0].z,
+                                        A[1].y, A[1].z));
+
+            float A4 = determinant(mat2(A[0].x, A[0].z,
+                                        A[2].x, A[2].z));
+
+            float A5 = determinant(mat2(A[0].z, A[0].x,
+                                        A[1].z, A[1].x));
+
+            float A7 = determinant(mat2(A[0].y, A[0].x,
+                                        A[2].y, A[2].x));
+
+            float A8 = determinant(mat2(A[0].x, A[0].y,
+                                        A[1].x, A[1].y));
+
+            vec3 Amid = vec3(A1, A4, A7) / Adet;
+            float v = dot(Amid, b);
+
+            vec3 Atop = vec3(A2, A5, A8) / Adet;
+            float u = dot(Atop, b);
+            // mat3 Ainv = inverse(A);
+            vec3 x = vec3(t, u, v);
+            // float t = x.x;
+
+            // printf("[%.4f, %.4f, %.4f]\n[%.4f, %.4f, %.4f]\n\n", Ainv[2].x, Ainv[2].y, Ainv[2].z, Abot.x, Abot.y, Abot.z);
+            // printf("%.4f, %.4f\n", t2, t);
+
+            // float u = x.y;
+            // float v = x.z;
+            if (
+                u >= 0.0f &&
+                v >= 0.0f &&
+                u + v <= 1.0f
+                // t < closestX.x &&
+                // t >= 0.0f
+            ) {
+                closestX = x;
+                index = i;
+                found = true;
+            }
         }
     }
 
@@ -384,7 +397,7 @@ vec3 DirectLight(const Intersection& i, vec3 lightSource, vec3 power, float dr)
     nhat = nhat / dist(vec3(0, 0, 0), nhat);
     vec3 rhat = lightSource - i.position;
     rhat = rhat / dist(vec3(0, 0, 0), rhat);
-    vec3 D = B * max(dot(rhat, nhat), 0.0f);
+    vec3 D = B * glm::max(dot(rhat, nhat), 0.0f);
 
     return D;
 }
