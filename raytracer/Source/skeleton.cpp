@@ -15,18 +15,18 @@ using namespace glm;
 /* ----------------------------------------------------------------------------*/
 /* GLOBAL VARIABLES                                                            */
 
-const int SCREEN_WIDTH = 400;
-const int SCREEN_HEIGHT = 400;
-const int NUM_RAYS = 100000;
+const int SCREEN_WIDTH = 300;
+const int SCREEN_HEIGHT = 300;
+const int NUM_RAYS = 2000;
 const int NUM_SAMPLES = 1;
-#define MAXDEPTH 1
+#define MAXDEPTH 1000
 
-vec3 image[SCREEN_WIDTH * SCREEN_HEIGHT * NUM_SAMPLES];
+vec3 image[SCREEN_WIDTH][SCREEN_HEIGHT];
 
 SDL_Surface* screen;
 int t;
 
-vec3 cameraPos(0.0f, 0.0f, -2.01f);
+vec3 cameraPos(0.0f, 0.0f, -2.03f);
 /* ----------------------------------------------------------------------------*/
 /* FUNCTIONS                                                                   */
 
@@ -52,14 +52,16 @@ bool ClosestIntersection(
 vec3 DirectLight( const Intersection& i );
 vec3 DirectLight(const Intersection& i, vec3 lightSource, vec3 power, float);
 float dist(vec3 a, vec3 b);
+void Render();
 
 vector<Triangle> model;
+vector<Triangle> modelEnclosed;
 
 void InitImage()
 {
-    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
-        for (int j = 0; j < NUM_SAMPLES; j++) {
-            image[i * NUM_SAMPLES + j] = vec3(0, 0, 0);
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            image[x][y] = vec3(0, 0, 0);
         }
     }
 }
@@ -67,8 +69,12 @@ void InitImage()
 int main( int argc, char* argv[] )
 {
     srand(time(NULL));
-    // InitImage();
+    InitImage();
     LoadTestModel(model);
+    LoadEnclosedTestModel(modelEnclosed);
+    // modelEnclosed = model;
+    Render();
+
     screen = InitializeSDL(SCREEN_WIDTH, SCREEN_HEIGHT);
     t = SDL_GetTicks(); // Set start value for timer.
 
@@ -148,14 +154,14 @@ vec3 generateRandomSphereVector()
     return ray;
 }
 
-vector<vec3> GenerateRays(vec3 norm)
+vector<vec3> GenerateRays(vec3 norm, int numrays)
 {
     vec3 hemisphereTop(0.0f, 0.0f, 1.0f);
 
     mat3 R = vectorRotation(normalize(norm), normalize(hemisphereTop));
 
     vector<vec3> rays;
-    for (int i = 0; i < NUM_RAYS; i++) {
+    for (int i = 0; i < numrays; i++) {
         vec3 ray = generateRandomSphereVector();
         if (ray.z < 0)
             ray.z = -ray.z;
@@ -183,40 +189,37 @@ void Update()
 
 float f = SCREEN_HEIGHT / 2;
 
-vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
+typedef struct {
+    vec3 brightness;
+    float distance;
+} pointVal;
+
+vec3 reflectRay(vec3 in, vec3 normal)
 {
-    Intersection i;
-    if (depth > 0) {
+    return in - 2.0f * normal * dot(in, normal);
+}
+
+vec3 shootRay(vec3 pos, vec3 dir, int depth, vec3 accumulator)
+{
+    Intersection intersection;
+    if (depth > 0 && length(accumulator) > 0.1f) {
         // calc where the ray intersects the world
         if (ClosestIntersection(pos,
                                 dir,
-                                model,
-                                i)) {
-            Triangle t = model[i.triangleIndex];
+                                modelEnclosed,
+                                intersection)) {
+            Triangle t = modelEnclosed[intersection.triangleIndex];
 
             if (t.lightSource) {
-                return t.intensity;
+                float anglestuff = glm::max(dot(-dir, t.normal), 0.f);
+                return t.intensity * pow(anglestuff, 4) * accumulator;
             } else {
-                vec3 nhat = t.normal;
-                nhat = nhat / dist(vec3(0, 0, 0), nhat);
+                vec3 reflecteddir = reflectRay(dir, t.normal);
 
-                float r = dist(pos, i.position) + totDist;
-                float A = 4.0f * PI * r * r;
-
-                vec3 reflecteddir = dir - 2.0f * nhat * dot(dir, nhat);
-
-                vec3 powOfNextPoint = shootRay(i.position, reflecteddir, r, depth - 1);
-
-                vec3 B = powOfNextPoint / A;
-
-                vec3 rhat = pos - i.position;
-                rhat = rhat / dist(vec3(0, 0, 0), rhat);
-
-                vec3 D = B *
-                         // fraction of light that is reflected
-                         glm::max(dot(rhat, nhat), 0.0f);
-
-                return D;
+                return shootRay(intersection.position,
+                                reflecteddir,
+                                depth - 1,
+                                glm::max(dot(-dir, t.normal), 0.0f) * t.color * t.diffuseK * accumulator);;
             }
         } else {
             // no intersection return black
@@ -224,25 +227,19 @@ vec3 shootRay(vec3 pos, vec3 dir, float totDist, int depth)
         }
     } else {
         // if run out of depth return black
-        return vec3(0, 0, 0);
+        return accumulator;
     }
 }
 
-
-void Draw()
+void Render()
 {
     int numthreads = 3;
     omp_set_num_threads(numthreads);
     printf("numthreads: %d\n", numthreads);
 
 
-    SDL_FillRect( screen, 0, 0 );
-
-    if ( SDL_MUSTLOCK(screen) )
-        SDL_LockSurface(screen);
-
-    // vec3 dir = normalize(vec3(0, 1, 0));
-    // vector<vec3> rays = GenerateRays(dir);
+    vec3 dir = normalize(vec3(0, 0, 100));
+    // vector<vec3> rays = GenerateRays(dir, NUM_RAYS);
 
     int done[numthreads];
     for (int i = 0; i < numthreads; i++) {
@@ -265,26 +262,44 @@ void Draw()
                 if (t.lightSource) {
                     colour = t.intensity;
                 } else {
-                    // vector<vec3> rays = GenerateRays(dir);
-                    vector<vec3> rays = GenerateRays(t.normal);
+                    vector<vec3> rays = GenerateRays(t.normal, NUM_RAYS);
+                    // mat3 rotation = vectorRotation(dir, t.normal);
+
                     for (int j = 0; j < rays.size(); j++) {
-                        colour += shootRay(i.position, rays[j], 0.0f, MAXDEPTH);
+                        vec3 brightness = shootRay(i.position, rays[j], MAXDEPTH, vec3(1, 1, 1));
+                        // float A = 4.0f * PI * res.distance * res.distance;
+                        colour += brightness * t.color;
                     }
                     colour /= rays.size();
                 }
-                // image[x * SCREEN_WIDTH + y] = colour;
             }
-            PutPixelSDL(screen, x, y, colour);
+            image[x][y] = colour;
             done[omp_get_thread_num()]++;
 
             int total = 0;
             for (int i = 0; i < numthreads; i++) {
                 total += done[i];
             }
-            // if (omp_get_thread_num() == 0) {
+
             printf("%.2f%%   %d/%d   \r", total / ((float)SCREEN_HEIGHT * SCREEN_WIDTH) * 100.f, total, SCREEN_HEIGHT * SCREEN_WIDTH);
             fflush(stdout);
-            // }
+        }
+    }
+
+}
+
+void Draw()
+{
+
+    SDL_FillRect( screen, 0, 0 );
+
+    if ( SDL_MUSTLOCK(screen) )
+        SDL_LockSurface(screen);
+
+
+    for (int y = 0; y < SCREEN_HEIGHT; y++)  {
+        for (int x = 0; x < SCREEN_HEIGHT; x++)  {
+            PutPixelSDL(screen, x, y, image[x][y]);
         }
     }
 
@@ -302,7 +317,7 @@ bool ClosestIntersection(
     vec3 start,
     vec3 dir,
     const vector<Triangle>& triangles,
-    Intersection& closestIntersection)
+    Intersection & closestIntersection)
 {
     start += dir * 0.00001f;
     vec3 closestX(m, 0.0f, 0.0f);
@@ -381,27 +396,6 @@ float dist(vec3 a, vec3 b)
     return sqrt(pow(a.x - b.x, 2) +
                 pow(a.y - b.y, 2) +
                 pow(a.z - b.z, 2));
-}
-
-
-vec3 DirectLight(const Intersection& i)
-{
-    return DirectLight(i, lightPos, lightColor, 0.0f);
-}
-
-vec3 DirectLight(const Intersection& i, vec3 lightSource, vec3 power, float dr)
-{
-    float r = dist(lightSource, i.position) + dr;
-
-    float A = 4.0f * PI * r * r;
-    vec3 B = power / A;
-    vec3 nhat = model[i.triangleIndex].normal;
-    nhat = nhat / dist(vec3(0, 0, 0), nhat);
-    vec3 rhat = lightSource - i.position;
-    rhat = rhat / dist(vec3(0, 0, 0), rhat);
-    vec3 D = B * glm::max(dot(rhat, nhat), 0.0f);
-
-    return D;
 }
 
 
