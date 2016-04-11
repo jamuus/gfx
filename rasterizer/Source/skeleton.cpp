@@ -10,8 +10,8 @@ using namespace glm;
 /* ----------------------------------------------------------------------------*/
 /* GLOBAL VARIABLES                                                            */
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 400;
+const int SCREEN_HEIGHT = 300;
 
 #define PI 3.14159265358979323846f
 SDL_Surface* screen;
@@ -369,7 +369,7 @@ void DrawLineSDL( SDL_Surface* surface, Pixel a, Pixel b, vec3 color )
 void Draw()
 {
     SDL_FillRect( screen, 0, 0 );
-    if ( SDL_MUSTLOCK(screen) )
+    if (SDL_MUSTLOCK(screen))
         SDL_LockSurface(screen);
 
     // Compute frame time:

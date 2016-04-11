@@ -14,8 +14,8 @@ using glm::mat3;
 /* ----------------------------------------------------------------------------*/
 /* GLOBAL VARIABLES                                                            */
 
-const int SCREEN_WIDTH = 300;
-const int SCREEN_HEIGHT = 300;
+const int SCREEN_WIDTH = 200;
+const int SCREEN_HEIGHT = 200;
 const int NUM_RAYS = 5000;
 const int NUM_SAMPLES = 1;
 #define MAXDEPTH 1
