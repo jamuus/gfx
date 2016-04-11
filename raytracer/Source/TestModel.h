@@ -20,15 +20,18 @@ public:
     bool lightSource;
     float diffuseK;
     float specularK;
+    float alpha;
+    float absorbtionFactor = 0.8;
 
 
-    Triangle( glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 color, float diffuseK, float specularK)
+    Triangle( glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 color, float diffuseK, float specularK, float alpha)
         : v0(v0), v1(v1), v2(v2), color(color)
     {
         ComputeNormal();
         lightSource = false;
         this->diffuseK = diffuseK;
         this->specularK = specularK;
+        this->alpha = alpha;
     }
 
     Triangle( glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 color , glm::vec3 intensity)
@@ -47,8 +50,8 @@ public:
     }
 };
 
-vec3 red(    0.75f, 0.15f, 0.15f );
-// vec3 red(    244 / 255.f, 67 / 255.f, 54 / 255.f );
+// vec3 red(    0.75f, 0.15f, 0.15f );
+vec3 red(    244 / 255.f, 67 / 255.f, 54 / 255.f );
 vec3 yellow( 0.75f, 0.75f, 0.15f );
 vec3 green(  0.15f, 0.75f, 0.15f );
 vec3 cyan(   0.15f, 0.75f, 0.75f );
@@ -56,8 +59,9 @@ vec3 blue(   0.15f, 0.15f, 0.75f );
 vec3 purple( 0.75f, 0.15f, 0.75f );
 vec3 white(  0.75f, 0.75f, 0.75f );
 
-float diffuseK = 0.8f;
-float specularK = 0.8f;
+float diffuseK = 0.4f;
+float specularK = 0.6f;
+float alpha = 10.f;
 
 // Loads the Cornell Box. It is scaled to fill the volume:
 // -1 <= x <= +1
@@ -65,13 +69,12 @@ float specularK = 0.8f;
 // -1 <= z <= +1
 void LoadTestModel( std::vector<Triangle>& triangles )
 {
-
-
     // triangles.clear();
     // triangles.reserve( 5 * 2 * 3 );
 
     // ---------------------------------------------------------------------------
     // Room
+
 
     float L = 555;          // Length of Cornell Box side.
 
@@ -85,31 +88,29 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     vec3 G(L, L, L);
     vec3 H(0, L, L);
 
-
-
     // Floor:
-    triangles.push_back( Triangle( C, B, A, white , diffuseK, specularK) );
-    triangles.push_back( Triangle( C, D, B, white , diffuseK, specularK) );
+    triangles.push_back( Triangle( C, B, A, white , diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle( C, D, B, white , diffuseK, specularK, alpha) );
 
     // Left wall
-    triangles.push_back( Triangle( A, E, C, white , diffuseK, specularK) );
-    triangles.push_back( Triangle( C, E, G, white , diffuseK, specularK) );
+    triangles.push_back( Triangle( A, E, C, white , diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle( C, E, G, white , diffuseK, specularK, alpha) );
 
     // Right wall
-    triangles.push_back( Triangle( F, B, D, white , diffuseK, specularK) );
-    triangles.push_back( Triangle( H, F, D, white , diffuseK, specularK) );
+    triangles.push_back( Triangle( F, B, D, white , diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle( H, F, D, white , diffuseK, specularK, alpha) );
 
     // Ceiling
-    triangles.push_back( Triangle( E, F, G, white , diffuseK, specularK) );
-    triangles.push_back( Triangle( F, H, G, white , diffuseK, specularK) );
+    triangles.push_back( Triangle( E, F, G, white , diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle( F, H, G, white , diffuseK, specularK, alpha) );
 
     // Back wall
-    triangles.push_back( Triangle( D, C, G, purple , diffuseK, specularK) );
-    triangles.push_back( Triangle( G, H, D, purple , diffuseK, specularK) );
+    triangles.push_back( Triangle( D, C, G, purple , diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle( G, H, D, purple , diffuseK, specularK, alpha) );
 
     // Light
     vec3 offset(L / 2 - 50, 350, L / 2 - 50);
-    float lightIntensity = 300.0f;
+    float lightIntensity = 500.0f;
     triangles.push_back( Triangle( E / 4.f + offset, F / 4.f + offset, G / 4.f + offset, white,
                                    lightIntensity * vec3(1, 1, 1)) );
     triangles.push_back( Triangle( F / 4.f + offset, H / 4.f + offset, G / 4.f + offset, white,
@@ -131,24 +132,24 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     float redBoxDiffuse = 0.4f;
 
     // Front
-    triangles.push_back( Triangle(E, B, A, red, redBoxDiffuse, specularK) );
-    triangles.push_back( Triangle(E, F, B, red, redBoxDiffuse, specularK) );
+    triangles.push_back( Triangle(E, B, A, red, redBoxDiffuse, specularK, alpha) );
+    triangles.push_back( Triangle(E, F, B, red, redBoxDiffuse, specularK, alpha) );
 
     // Front
-    triangles.push_back( Triangle(F, D, B, red, redBoxDiffuse, specularK) );
-    triangles.push_back( Triangle(F, H, D, red, redBoxDiffuse, specularK) );
+    triangles.push_back( Triangle(F, D, B, red, redBoxDiffuse, specularK, alpha) );
+    triangles.push_back( Triangle(F, H, D, red, redBoxDiffuse, specularK, alpha) );
 
     // BACK
-    triangles.push_back( Triangle(H, C, D, red, redBoxDiffuse, specularK) );
-    triangles.push_back( Triangle(H, G, C, red, redBoxDiffuse, specularK) );
+    triangles.push_back( Triangle(H, C, D, red, redBoxDiffuse, specularK, alpha) );
+    triangles.push_back( Triangle(H, G, C, red, redBoxDiffuse, specularK, alpha) );
 
     // LEFT
-    triangles.push_back( Triangle(G, E, C, red, redBoxDiffuse, specularK) );
-    triangles.push_back( Triangle(E, A, C, red, redBoxDiffuse, specularK) );
+    triangles.push_back( Triangle(G, E, C, red, redBoxDiffuse, specularK, alpha) );
+    triangles.push_back( Triangle(E, A, C, red, redBoxDiffuse, specularK, alpha) );
 
     // TOP
-    triangles.push_back( Triangle(G, F, E, red, redBoxDiffuse, specularK) );
-    triangles.push_back( Triangle(G, H, F, red, redBoxDiffuse, specularK) );
+    triangles.push_back( Triangle(G, F, E, red, redBoxDiffuse, specularK, alpha) );
+    triangles.push_back( Triangle(G, H, F, red, redBoxDiffuse, specularK, alpha) );
 
     // ---------------------------------------------------------------------------
     // Tall block
@@ -164,24 +165,24 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     H = vec3(314, 330, 456);
 
     // Front
-    triangles.push_back( Triangle(E, B, A, blue, diffuseK, specularK) );
-    triangles.push_back( Triangle(E, F, B, blue, diffuseK, specularK) );
+    triangles.push_back( Triangle(E, B, A, blue, diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle(E, F, B, blue, diffuseK, specularK, alpha) );
 
     // Front
-    triangles.push_back( Triangle(F, D, B, blue, diffuseK, specularK) );
-    triangles.push_back( Triangle(F, H, D, blue, diffuseK, specularK) );
+    triangles.push_back( Triangle(F, D, B, blue, diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle(F, H, D, blue, diffuseK, specularK, alpha) );
 
     // BACK
-    triangles.push_back( Triangle(H, C, D, blue, diffuseK, specularK) );
-    triangles.push_back( Triangle(H, G, C, blue, diffuseK, specularK) );
+    triangles.push_back( Triangle(H, C, D, blue, diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle(H, G, C, blue, diffuseK, specularK, alpha) );
 
     // LEFT
-    triangles.push_back( Triangle(G, E, C, blue, diffuseK, specularK) );
-    triangles.push_back( Triangle(E, A, C, blue, diffuseK, specularK) );
+    triangles.push_back( Triangle(G, E, C, blue, diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle(E, A, C, blue, diffuseK, specularK, alpha) );
 
     // TOP
-    triangles.push_back( Triangle(G, F, E, blue, diffuseK, specularK) );
-    triangles.push_back( Triangle(G, H, F, blue, diffuseK, specularK) );
+    triangles.push_back( Triangle(G, F, E, blue, diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle(G, H, F, blue, diffuseK, specularK, alpha) );
 
 
     // ----------------------------------------------
@@ -227,8 +228,8 @@ void LoadEnclosedTestModel( std::vector<Triangle>& triangles )
 
 
     // front:
-    triangles.push_back( Triangle( E, F, A, white , diffuseK, specularK) );
-    triangles.push_back( Triangle( B, F, A, white , diffuseK, specularK) );
+    triangles.push_back( Triangle( E, F, A, white , diffuseK, specularK, alpha) );
+    triangles.push_back( Triangle( B, F, A, white , diffuseK, specularK, alpha) );
 
     LoadTestModel(triangles);
 }
