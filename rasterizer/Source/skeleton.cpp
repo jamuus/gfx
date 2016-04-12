@@ -39,6 +39,22 @@ float rotateSpeed = 0.1f;
 float lightTranslateDist = 1.0f;
 mat3 R;
 
+
+vec3 w(1, 1, 1);
+vec3 b(0, 0, 0);
+vec3 texture[10][10] = {
+    {w, b, w, b, w, b, w, b, w, b},
+    {b, w, b, w, b, w, b, w, b, w},
+    {w, b, w, b, w, b, w, b, w, b},
+    {b, w, b, w, b, w, b, w, b, w},
+    {w, b, w, b, w, b, w, b, w, b},
+    {b, w, b, w, b, w, b, w, b, w},
+    {w, b, w, b, w, b, w, b, w, b},
+    {b, w, b, w, b, w, b, w, b, w},
+    {w, b, w, b, w, b, w, b, w, b},
+    {b, w, b, w, b, w, b, w, b, w}
+};
+
 vec3 image[SCREEN_WIDTH][SCREEN_HEIGHT];
 
 int dx;
@@ -49,6 +65,7 @@ struct Pixel {
     int y;
     float zinv;
     vec3 pos3d;
+    vec2 uv;
 
     inline Pixel operator-(Pixel a)
     {
@@ -58,6 +75,7 @@ struct Pixel {
 
 struct Vertex {
     vec3 position;
+    vec2 uv;
     // vec3 normal;
     // vec3 reflectance;
 };
@@ -208,9 +226,16 @@ void PixelShader(const Pixel& p)
                                           + indirectLightPowerPerArea
                                          );
 
-        vec3 illumination = badR * currentColor
-                            // wew
-                            * R;
+        vec2 pos(p.uv * 10.f);
+        int u = floor(pos.x);
+        int v = floor(pos.y);
+
+        vec3 illumination = badR * texture[u][v];
+
+
+
+        // wew
+        // * R;
 
         image[x][y] = illumination;
 
@@ -226,6 +251,8 @@ void VertexShader( const Vertex& v, Pixel& p )
     p.y = (int)(focalLength * newV.y * p.zinv) + SCREEN_HEIGHT / 2;
 
     p.pos3d = v.position;
+
+    p.uv = v.uv;
     //lmao
     // * R;
 }
@@ -325,9 +352,13 @@ void Interpolate( Pixel p1, Pixel p2, vector<Pixel>& result )
     float stepZinv = (p2.zinv - p1.zinv) /
                      float(glm::max(N - 1, 1));
 
+    vec2 stepuv = (p2.uv - p1.uv) /
+                  float(glm::max(N - 1, 1));
+
     vec2 itPix( a );
     vec3 itPos( p1.pos3d * p1.zinv );
     float itZinv =  p1.zinv;
+    vec2 ituv =  p1.uv;
     // printf("(%.4f,%.4f,%.4f)\n", itPos.x, itPos.y, itPos.z);
     // printf("%.1f, %.1f, %.1f %.1f\n", itPix.x, itPix.y, stepPixel.x, stepPixel.y);
 
@@ -341,6 +372,9 @@ void Interpolate( Pixel p1, Pixel p2, vector<Pixel>& result )
 
         result[i].pos3d = itPos / result[i].zinv;
         itPos += stepPos;
+
+        result[i].uv = ituv;
+        ituv += stepuv;
     }
 }
 void Interpolate( ivec2 a, ivec2 b, vector<ivec2>& result )
@@ -380,8 +414,11 @@ void Draw()
     for ( int i = 0; i < triangles.size(); ++i ) {
         vector<Vertex> vertices(3);
         vertices[0].position = triangles[i].v0;
+        vertices[0].uv = triangles[i].uv0;
         vertices[1].position = triangles[i].v1;
+        vertices[1].uv = triangles[i].uv1;
         vertices[2].position = triangles[i].v2;
+        vertices[2].uv = triangles[i].uv2;
 
         currentNormal = triangles[i].normal;
         currentReflectance = vec3(1, 1, 1);
