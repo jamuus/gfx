@@ -10,8 +10,8 @@ using namespace glm;
 /* ----------------------------------------------------------------------------*/
 /* GLOBAL VARIABLES                                                            */
 
-const int SCREEN_WIDTH = 400;
-const int SCREEN_HEIGHT = 300;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 800;
 
 #define PI 3.14159265358979323846f
 SDL_Surface* screen;
@@ -42,18 +42,7 @@ mat3 R;
 
 vec3 w(1, 1, 1);
 vec3 b(0, 0, 0);
-vec3 texture[10][10] = {
-    {w, b, w, b, w, b, w, b, w, b},
-    {b, w, b, w, b, w, b, w, b, w},
-    {w, b, w, b, w, b, w, b, w, b},
-    {b, w, b, w, b, w, b, w, b, w},
-    {w, b, w, b, w, b, w, b, w, b},
-    {b, w, b, w, b, w, b, w, b, w},
-    {w, b, w, b, w, b, w, b, w, b},
-    {b, w, b, w, b, w, b, w, b, w},
-    {w, b, w, b, w, b, w, b, w, b},
-    {b, w, b, w, b, w, b, w, b, w}
-};
+vec3 **texture;
 
 vec3 image[SCREEN_WIDTH][SCREEN_HEIGHT];
 
@@ -98,6 +87,7 @@ void VertexShader( const vec3& v, Pixel& p );
 
 int main( int argc, char* argv[] )
 {
+    srand (time(NULL));
     screen = InitializeSDL( SCREEN_WIDTH, SCREEN_HEIGHT );
     t = SDL_GetTicks(); // Set start value for timer.
     LoadTestModel(triangles);
@@ -226,11 +216,20 @@ void PixelShader(const Pixel& p)
                                           + indirectLightPowerPerArea
                                          );
 
-        vec2 pos(p.uv * 10.f);
+        vec2 pos(p.uv * 9.f);
         int u = floor(pos.x);
         int v = floor(pos.y);
+        vec3 illumination;
 
-        vec3 illumination = badR * texture[u][v];
+        if (u > 9 || v > 9 || u < 0 || v < 0) {
+            // printf("\nwut %d, %d\n", u, v);
+            illumination = currentColor;
+        } else {
+
+            illumination = badR *
+                           // currentColor;
+                           texture[u][v];
+        }
 
 
 
@@ -352,13 +351,13 @@ void Interpolate( Pixel p1, Pixel p2, vector<Pixel>& result )
     float stepZinv = (p2.zinv - p1.zinv) /
                      float(glm::max(N - 1, 1));
 
-    vec2 stepuv = (p2.uv - p1.uv) /
+    vec2 stepuv = (p2.uv * p2.zinv - p1.uv * p1.zinv) /
                   float(glm::max(N - 1, 1));
 
     vec2 itPix( a );
     vec3 itPos( p1.pos3d * p1.zinv );
     float itZinv =  p1.zinv;
-    vec2 ituv =  p1.uv;
+    vec2 ituv(p1.uv * p1.zinv);
     // printf("(%.4f,%.4f,%.4f)\n", itPos.x, itPos.y, itPos.z);
     // printf("%.1f, %.1f, %.1f %.1f\n", itPix.x, itPix.y, stepPixel.x, stepPixel.y);
 
@@ -373,7 +372,7 @@ void Interpolate( Pixel p1, Pixel p2, vector<Pixel>& result )
         result[i].pos3d = itPos / result[i].zinv;
         itPos += stepPos;
 
-        result[i].uv = ituv;
+        result[i].uv = ituv / result[i].zinv;
         ituv += stepuv;
     }
 }
@@ -423,7 +422,10 @@ void Draw()
         currentNormal = triangles[i].normal;
         currentReflectance = vec3(1, 1, 1);
         currentColor = triangles[i].color;
+        texture = triangles[i].texture;
 
+
+        // printf("\n%.4f\n", texture[7][8].x);
         DrawPolygon(screen, vertices);
     }
     int t2 = SDL_GetTicks();

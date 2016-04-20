@@ -7,6 +7,14 @@
 #include <vector>
 
 using namespace glm;
+
+vec2 bl(0, 0);
+vec2 tl(0, 1);
+vec2 tr(1, 1);
+vec2 br(1, 0);
+
+
+
 // Used to describe a triangular surface:
 class Triangle
 {
@@ -22,16 +30,13 @@ public:
 
     glm::vec3 normal;
     glm::vec3 color;
-    glm::vec3 texture[10][10];
+    glm::vec3 **texture;
 
-    Triangle( glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 color )
-        : v0(v0), v1(v1), v2(v2), color(color)
+    Triangle( glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vec2 uv0, vec2 uv1, vec2 uv2)
+        : v0(v0), v1(v1), v2(v2), uv0(uv0), uv1(uv1), uv2(uv2), color(color)
     {
-        uv0 = vec2(0, 0);
-        uv1 = vec2(0, 1);
-        uv2 = vec2(1, 1);
-        vec3 w(1, 1, 1);
-        vec3 b(0, 0, 0);
+        vec3 w(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, rand() / (float)RAND_MAX);
+        vec3 b(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, rand() / (float)RAND_MAX);
         vec3 texture2[10][10] = {
             {w, b, w, b, w, b, w, b, w, b},
             {b, w, b, w, b, w, b, w, b, w},
@@ -44,7 +49,17 @@ public:
             {w, b, w, b, w, b, w, b, w, b},
             {b, w, b, w, b, w, b, w, b, w}
         };
-        memcpy(texture, texture2, sizeof(vec3) * 10 * 10);
+
+        texture = (vec3**)malloc(sizeof(vec3*) * 10);
+        for (int i = 0; i < 10; i++) {
+            texture[i] = (vec3*)malloc(sizeof(vec3) * 10);
+            for (int j = 0; j < 10; j++) {
+                texture[i][j] = vec3(texture2[i][j]);
+            }
+        }
+        // texture = (vec3**)malloc(sizeof(vec3) * 10 * 10);
+        // memcpy(texture, texture2, sizeof(vec3) * 10 * 10);
+        // printf("%.4f\n", texture[7][8].x);
         ComputeNormal();
     }
 
@@ -92,24 +107,24 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     vec3 H(0, L, L);
 
     // Floor:
-    triangles.push_back( Triangle( C, B, A, green ) );
-    triangles.push_back( Triangle( C, D, B, green ) );
+    triangles.push_back( Triangle( C, B, A, green, tr, bl, br ) );
+    triangles.push_back( Triangle( C, D, B, green, tr, tl, bl ) );
 
     // Left wall
-    triangles.push_back( Triangle( A, E, C, purple ) );
-    triangles.push_back( Triangle( C, E, G, purple ) );
+    triangles.push_back( Triangle( A, E, C, purple, br, tr, bl ) );
+    triangles.push_back( Triangle( C, E, G, purple, bl, tr, tl ) );
 
     // Right wall
-    triangles.push_back( Triangle( F, B, D, yellow ) );
-    triangles.push_back( Triangle( H, F, D, yellow ) );
+    triangles.push_back( Triangle( F, B, D, yellow, tl, bl, br ) );
+    triangles.push_back( Triangle( H, F, D, yellow, tr, tl, br ) );
 
     // Ceiling
-    triangles.push_back( Triangle( E, F, G, cyan ) );
-    triangles.push_back( Triangle( F, H, G, cyan ) );
+    triangles.push_back( Triangle( E, F, G, cyan, tr, tl, br ) );
+    triangles.push_back( Triangle( F, H, G, cyan, tl, bl, br ) );
 
     // Back wall
-    triangles.push_back( Triangle( G, D, C, white ) );
-    triangles.push_back( Triangle( G, H, D, white ) );
+    triangles.push_back( Triangle( G, D, C, white, tr, bl, br ) );
+    triangles.push_back( Triangle( G, H, D, white, tr, tl, bl ) );
 
     // ---------------------------------------------------------------------------
     // Short block
@@ -125,24 +140,24 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     H = vec3( 82, 165, 225);
 
     // Front
-    triangles.push_back( Triangle(E, B, A, red) );
-    triangles.push_back( Triangle(E, F, B, red) );
+    triangles.push_back( Triangle(E, B, A, red, tl, br, bl) );
+    triangles.push_back( Triangle(E, F, B, red, tl, tr, br) );
 
     // Front
-    triangles.push_back( Triangle(F, D, B, red) );
-    triangles.push_back( Triangle(F, H, D, red) );
+    triangles.push_back( Triangle(F, D, B, red, tr, bl, br) );
+    triangles.push_back( Triangle(F, H, D, red, tr, tl, bl) );
 
     // BACK
-    triangles.push_back( Triangle(H, C, D, red) );
-    triangles.push_back( Triangle(H, G, C, red) );
+    triangles.push_back( Triangle(H, C, D, red, tr, bl, br) );
+    triangles.push_back( Triangle(H, G, C, red, tr, tl, bl) );
 
     // LEFT
-    triangles.push_back( Triangle(G, E, C, red) );
-    triangles.push_back( Triangle(E, A, C, red) );
+    triangles.push_back( Triangle(G, E, C, red, tr, tl, br) );
+    triangles.push_back( Triangle(E, A, C, red, tl, bl, br) );
 
     // TOP
-    triangles.push_back( Triangle(G, F, E, red) );
-    triangles.push_back( Triangle(G, H, F, red) );
+    triangles.push_back( Triangle(G, F, E, red, bl, tr, tl) );
+    triangles.push_back( Triangle(G, H, F, red, bl, br, tr) );
 
     // ---------------------------------------------------------------------------
     // Tall block
@@ -158,24 +173,24 @@ void LoadTestModel( std::vector<Triangle>& triangles )
     H = vec3(314, 330, 456);
 
     // Front
-    triangles.push_back( Triangle(E, B, A, blue) );
-    triangles.push_back( Triangle(E, F, B, blue) );
+    triangles.push_back( Triangle(E, B, A, blue, tl, br, bl) );
+    triangles.push_back( Triangle(E, F, B, blue, tl, tr, br) );
 
-    // Front
-    triangles.push_back( Triangle(F, D, B, blue) );
-    triangles.push_back( Triangle(F, H, D, blue) );
+    // RIGHT
+    triangles.push_back( Triangle(F, D, B, blue, tr, bl, br) );
+    triangles.push_back( Triangle(F, H, D, blue, tr, tl, bl) );
 
     // BACK
-    triangles.push_back( Triangle(H, C, D, blue) );
-    triangles.push_back( Triangle(H, G, C, blue) );
+    triangles.push_back( Triangle(H, C, D, blue, tr, bl, br) );
+    triangles.push_back( Triangle(H, G, C, blue, tr, tl, bl) );
 
     // LEFT
-    triangles.push_back( Triangle(G, E, C, blue) );
-    triangles.push_back( Triangle(E, A, C, blue) );
+    triangles.push_back( Triangle(G, E, C, blue, tr, tl, br) );
+    triangles.push_back( Triangle(E, A, C, blue, tl, bl, br) );
 
     // TOP
-    triangles.push_back( Triangle(G, F, E, blue) );
-    triangles.push_back( Triangle(G, H, F, blue) );
+    triangles.push_back( Triangle(G, F, E, blue, bl, tr, tl) );
+    triangles.push_back( Triangle(G, H, F, blue, bl, br, tr) );
 
 
     // ----------------------------------------------
