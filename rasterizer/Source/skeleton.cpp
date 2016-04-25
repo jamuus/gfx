@@ -10,8 +10,8 @@ using namespace glm;
 /* ----------------------------------------------------------------------------*/
 /* GLOBAL VARIABLES                                                            */
 
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 800;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
 
 #define PI 3.14159265358979323846f
 SDL_Surface* screen;
@@ -55,6 +55,7 @@ struct Pixel {
     float zinv;
     vec3 pos3d;
     vec2 uv;
+    Triangle *t;
 
     inline Pixel operator-(Pixel a)
     {
@@ -65,6 +66,7 @@ struct Pixel {
 struct Vertex {
     vec3 position;
     vec2 uv;
+    Triangle *t;
     // vec3 normal;
     // vec3 reflectance;
 };
@@ -215,13 +217,13 @@ void PixelShader(const Pixel& p)
         vec3 badR = currentReflectance * (D
                                           + indirectLightPowerPerArea
                                          );
-
-        vec2 pos(p.uv * 9.f);
+        ivec2 texSize = (*(p.t)).texSize;
+        vec2 pos(p.uv.x * (texSize.x - 1), p.uv.y * (texSize.y - 1));
         int u = floor(pos.x);
         int v = floor(pos.y);
         vec3 illumination;
 
-        if (u > 9 || v > 9 || u < 0 || v < 0) {
+        if (u > texSize.x - 1 || v > texSize.y - 1 || u < 0 || v < 0) {
             // printf("\nwut %d, %d\n", u, v);
             illumination = currentColor;
         } else {
@@ -252,6 +254,7 @@ void VertexShader( const Vertex& v, Pixel& p )
     p.pos3d = v.position;
 
     p.uv = v.uv;
+    p.t = v.t;
     //lmao
     // * R;
 }
@@ -276,7 +279,7 @@ void DrawPolygon( SDL_Surface* surface,
 {
     int V = vertices.size();
     vector<Pixel> vertexPixels( V );
-    for ( int i = 0; i < V; ++i )
+    for (int i = 0; i < V; ++i)
         VertexShader( vertices[i], vertexPixels[i] );
     vector<Pixel> leftPixels;
     vector<Pixel> rightPixels;
@@ -374,6 +377,8 @@ void Interpolate( Pixel p1, Pixel p2, vector<Pixel>& result )
 
         result[i].uv = ituv / result[i].zinv;
         ituv += stepuv;
+
+        result[i].t = p1.t;
     }
 }
 void Interpolate( ivec2 a, ivec2 b, vector<ivec2>& result )
@@ -414,10 +419,16 @@ void Draw()
         vector<Vertex> vertices(3);
         vertices[0].position = triangles[i].v0;
         vertices[0].uv = triangles[i].uv0;
+        vertices[0].t = &triangles[i];
+
         vertices[1].position = triangles[i].v1;
         vertices[1].uv = triangles[i].uv1;
+        vertices[1].t = &triangles[i];
+
         vertices[2].position = triangles[i].v2;
         vertices[2].uv = triangles[i].uv2;
+        vertices[2].t = &triangles[i];
+
 
         currentNormal = triangles[i].normal;
         currentReflectance = vec3(1, 1, 1);
