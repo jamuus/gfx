@@ -39,8 +39,8 @@ public:
         srand(texseed);
         vec3 w(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, rand() / (float)RAND_MAX);
         vec3 b(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, rand() / (float)RAND_MAX);
-        texSize.x = 5;
-        texSize.y = 10;
+        texSize.x = 20;
+        texSize.y = 50;
         vec3 texture2[texSize.x][texSize.y];
         //  = {
         //     {w, b, w, b, w, b, w, b, w, b},
@@ -60,10 +60,10 @@ public:
             }
         }
 
-        texture = (vec3**)malloc(sizeof(vec3*) * texSize.y);
-        for (int i = 0; i < texSize.y; i++) {
-            texture[i] = (vec3*)malloc(sizeof(vec3) * texSize.x);
-            for (int j = 0; j < texSize.x; j++) {
+        texture = (vec3**)malloc(sizeof(vec3*) * texSize.x);
+        for (int i = 0; i < texSize.x; i++) {
+            texture[i] = (vec3*)malloc(sizeof(vec3) * texSize.y);
+            for (int j = 0; j < texSize.y; j++) {
                 texture[i][j] = vec3(texture2[i][j]);
             }
         }
